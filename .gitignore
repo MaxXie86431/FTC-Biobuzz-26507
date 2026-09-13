@@ -3,4 +3,6 @@ build/
 *.gradle
 *.xml
 *.bat
+*.idea
+*.iml
 *.properties
