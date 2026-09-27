@@ -2,25 +2,35 @@ import com.pedropathing.api.PoseFactory;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
 
-public class PoseExample implements Mechanism {
+public class PoseTracker {
+
     private final Follower follower;
-    private final Servo servo;
+
     private final PoseFactory p = PoseFactory.degrees();
     private final Pose startPose = p.of(0, 0, 0);
 
-    public PoseExample(Follower follower, Servo servo) {
+    public PoseTracker(Follower follower) {
         this.follower = follower;
-        this.servo = servo;
         follower.setPose(startPose);
     }
 
-    public Command example() {
-        return instant(() -> {
-            Pose pose = follower.pose();
+    public void update() {
+        follower.update();
+    }
 
-            if (pose.x() > 10) {
-                servo.move(0.5).schedule();
-            }
-        })
+    public Pose getPosition() {
+        return follower.pose();
+    }
+
+    public double getX() {
+        return follower.pose().x();
+    }
+    
+    public double getY() {
+        return follower.pose().y();
+    }
+
+    public double getHeading() {
+        return follower.pose().heading();
     }
 }
