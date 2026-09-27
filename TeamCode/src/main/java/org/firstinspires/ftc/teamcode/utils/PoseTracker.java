@@ -1,3 +1,5 @@
+package org.firstinspires.ftc.teamcode.utils;
+
 import com.pedropathing.api.PoseFactory;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
@@ -25,7 +27,7 @@ public class PoseTracker {
     public double getX() {
         return follower.pose().x();
     }
-    
+
     public double getY() {
         return follower.pose().y();
     }
