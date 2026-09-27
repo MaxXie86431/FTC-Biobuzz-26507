@@ -1,6 +1,8 @@
-public class Servo {
+public class Servo implements Mechanism{
     NextServo servo = new NextServo("testServo");
-    public void move(double x) {
-        servo.setPosition(x);
+    public Command move(double position) {
+        return instant(() -> {
+            servo.setPosition(position);
+        });
     }
 }
