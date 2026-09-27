@@ -6,6 +6,7 @@ import dev.nextftc.hardware.RobotController;
 import dev.nextftc.hardware.actuators.NextMotor;
 import dev.nextftc.robot.Mechanism;
 import dev.nextftc.robot.drive.DriveCommands;
+import com.pedropathing.ivy.Command;
 
 public class Drivetrain implements Mechanism{
     public Drivetrain(){
@@ -20,11 +21,11 @@ public class Drivetrain implements Mechanism{
 
     public void drive(Gamepad gamepad1) {
         DriveCommands.mecanumDrive(
-            drivetrain.frontLeft,
-            drivetrain.frontRight,
-            drivetrain.backLeft,
-            drivetrain.backRight,
+            frontLeft,
+            frontRight,
+            backLeft,
+            backRight,
             gamepad1
-        )
+        ).schedule();
     }
 }

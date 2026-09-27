@@ -14,11 +14,11 @@ public class TeleOp extends NextOpMode{
     private final Robot robot;
 
     public TeleOp(Robot robot) {
-        super(robot)
+        super(robot);
         this.robot = robot;
 
         Scheduler.reset();
-        this.robot.init.schedule();
+        this.robot.init().schedule();
     }
 
     @Override
@@ -27,7 +27,7 @@ public class TeleOp extends NextOpMode{
 
         CommandGamepad gp1 = new CommandGamepad(gamepad1);
         CommandGamepad gp2 = new CommandGamepad(gamepad2);
-        robot.getDrivetrain().drive(gamepad1).schedule();
+        robot.getDrivetrain().drive(gamepad1);
 
         // Intake
         gp1.leftTrigger().isOver(0.2).onTrue(robot.getIntake().intake());

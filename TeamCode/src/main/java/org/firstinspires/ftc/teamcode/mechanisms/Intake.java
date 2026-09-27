@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.mechanisms;
 
+import com.pedropathing.ivy.Command;
+
 import dev.nextftc.robot.Mechanism;
 import dev.nextftc.hardware.actuators.NextMotor;
 import dev.nextftc.hardware.RobotController;
 
-public class Motor implements Mechanism {
+public class Intake implements Mechanism {
 
     NextMotor intakeMotor = new NextMotor(RobotController.controlHub(), 2);
 

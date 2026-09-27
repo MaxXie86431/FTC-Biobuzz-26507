@@ -1,11 +1,19 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import androidx.annotation.NonNull;
+import java.util.Set;
+
 import com.pedropathing.follower.Follower;
+import com.pedropathing.ivy.Command;
+import static com.pedropathing.ivy.commands.Commands.instant;
+
+import dev.nextftc.robot.Mechanism;
+import dev.nextftc.robot.NextRobot;
 
 import org.firstinspires.ftc.teamcode.mechanisms.Drivetrain;
 import org.firstinspires.ftc.teamcode.mechanisms.Intake;
 
-public class Robot implements NextRobot{
+public class Robot implements NextRobot {
     private  Follower follower;
 
     private final Drivetrain drivetrain = new Drivetrain();
@@ -13,7 +21,7 @@ public class Robot implements NextRobot{
 
     public Robot() {}
 
-    public Drive getDrivetrain() {
+    public Drivetrain getDrivetrain() {
         return drivetrain;
     }
 
@@ -21,11 +29,11 @@ public class Robot implements NextRobot{
         return intake;
     }
 
-    public void init() {
-
+    public Command init() {
+        return instant(() -> {});
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public Set<Mechanism> getMechanisms() {
         return Set.of(drivetrain, intake);
