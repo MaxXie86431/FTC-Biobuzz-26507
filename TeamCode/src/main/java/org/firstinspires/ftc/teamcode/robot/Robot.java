@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.mechanisms.Drivetrain;
 import org.firstinspires.ftc.teamcode.mechanisms.Intake;
 
 public class Robot implements NextRobot {
-    private  Follower follower;
+    //private  Follower follower;
 
     private final Drivetrain drivetrain = new Drivetrain();
     private final Intake intake = new Intake();

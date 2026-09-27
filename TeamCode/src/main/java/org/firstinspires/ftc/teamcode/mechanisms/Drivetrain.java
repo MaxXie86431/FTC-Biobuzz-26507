@@ -11,13 +11,12 @@ import com.pedropathing.ivy.Command;
 public class Drivetrain implements Mechanism{
     public Drivetrain(){
         frontRight.setDirection(NextMotor.Direction.REVERSE);
-        backRight.setDirection(NextMotor.Direction.REVERSE);
     }
 
-    public final NextMotor frontLeft = new NextMotor(RobotController.controlHub(), 0);
-    public final NextMotor frontRight = new NextMotor(RobotController.expansionHub(), 1);
+    public final NextMotor frontLeft = new NextMotor(RobotController.controlHub(), 1);
+    public final NextMotor frontRight = new NextMotor(RobotController.expansionHub(), 0);
     public final NextMotor backLeft = new NextMotor(RobotController.controlHub(), 0);
-    public final NextMotor backRight =  new NextMotor(RobotController.expansionHub(), 1);
+    public final NextMotor backRight =  new NextMotor(RobotController.expansionHub(), 2);
 
     public void drive(Gamepad gamepad1) {
         DriveCommands.mecanumDrive(

@@ -8,7 +8,7 @@ import dev.nextftc.hardware.RobotController;
 
 public class Intake implements Mechanism {
 
-    NextMotor intakeMotor = new NextMotor(RobotController.controlHub(), 2);
+    NextMotor intakeMotor = new NextMotor(RobotController.controlHub(), 3);
 
     public Command intake() {
         return infinite(() ->
