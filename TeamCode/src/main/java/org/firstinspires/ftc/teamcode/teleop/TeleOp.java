@@ -34,6 +34,10 @@ public class TeleOp extends NextOpMode{
         gp1.leftTrigger().isOver(0.2).onFalse(robot.getIntake().stop());
         gp1.leftBumper().onTrue(robot.getIntake().outtake());
         gp1.leftBumper().onFalse(robot.getIntake().stop());
+
+        // Roller 2
+        gp1.circle().onTrue(robot.getIntermediate().rollup());
+        gp1.circle().onFalse(robot.getIntermediate().stop());
     }
 
     @Override

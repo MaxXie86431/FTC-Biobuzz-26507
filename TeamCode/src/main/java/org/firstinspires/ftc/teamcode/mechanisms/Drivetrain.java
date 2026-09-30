@@ -17,7 +17,6 @@ public class Drivetrain implements Mechanism{
     public final NextMotor frontRight = new NextMotor(RobotController.expansionHub(), 0);
     public final NextMotor backLeft = new NextMotor(RobotController.controlHub(), 0);
     public final NextMotor backRight =  new NextMotor(RobotController.expansionHub(), 2);
-
     public void drive(Gamepad gamepad1) {
         DriveCommands.mecanumDrive(
             frontLeft,
