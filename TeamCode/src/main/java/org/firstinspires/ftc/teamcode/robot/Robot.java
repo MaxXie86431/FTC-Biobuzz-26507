@@ -39,6 +39,7 @@ public class Robot implements NextRobot {
         return instant(() -> {});
     }
 
+
     @NonNull
     @Override
     public Set<Mechanism> getMechanisms() {
