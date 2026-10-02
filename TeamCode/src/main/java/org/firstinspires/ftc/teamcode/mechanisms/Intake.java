@@ -12,13 +12,13 @@ public class Intake implements Mechanism {
 
     public Command intake() {
         return infinite(() ->
-                intakeMotor.setThrottle(1.0)
+                intakeMotor.setThrottle(0.7)
         );
     }
 
     public Command outtake() {
         return infinite(() ->
-                intakeMotor.setThrottle(-1.0)
+                intakeMotor.setThrottle(-0.7)
         );
     }
 

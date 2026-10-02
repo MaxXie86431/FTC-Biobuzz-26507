@@ -11,13 +11,13 @@ public class Intermediate implements Mechanism {
     public final NextMotor intermediateMotor = new NextMotor(RobotController.controlHub(), 2);
     public Command rollup() {
         return infinite(() ->
-                intermediateMotor.setThrottle(-1.0)
+                intermediateMotor.setThrottle(-1)
         );
     }
 
     public Command rolldown() {
         return infinite(() ->
-                intermediateMotor.setThrottle(1.0)
+                intermediateMotor.setThrottle(1)
         );
     }
 
