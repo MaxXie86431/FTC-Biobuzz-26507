@@ -7,21 +7,30 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Command;
 import static com.pedropathing.ivy.commands.Commands.instant;
 
+import dev.nextftc.hardware.RobotController;
 import dev.nextftc.robot.Mechanism;
 import dev.nextftc.robot.NextRobot;
 
 import org.firstinspires.ftc.teamcode.mechanisms.Drivetrain;
 import org.firstinspires.ftc.teamcode.mechanisms.Intake;
 import org.firstinspires.ftc.teamcode.mechanisms.Intermediate;
+import org.firstinspires.ftc.teamcode.pedro.Constants;
 
 public class Robot implements NextRobot {
-    //private  Follower follower;
+    private  Follower follower;
 
     private final Drivetrain drivetrain = new Drivetrain();
     private final Intake intake = new Intake();
     private final Intermediate intermediate = new Intermediate();
 
     public Robot() {}
+
+    public Follower getFollower() {
+        if (follower == null) {
+            follower = Constants.create(RobotController.hardwareMap());
+        }
+        return follower;
+    }
 
     public Drivetrain getDrivetrain() {
         return drivetrain;
