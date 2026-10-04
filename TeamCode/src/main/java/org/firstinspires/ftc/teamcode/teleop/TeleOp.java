@@ -15,7 +15,6 @@ import org.firstinspires.ftc.teamcode.robot.Robot;
 @NextTeleop(name = "TeleOp")
 public class TeleOp extends NextOpMode{
     private final Robot robot;
-    public static double flywheelPower = 1;
     public TeleOp(Robot robot) {
         super(robot);
         this.robot = robot;
