@@ -1,4 +1,5 @@
 .DS_Store
+# Gradle-generated build output, including problems-report.html.
 build/
 .gradle/
 .idea/
