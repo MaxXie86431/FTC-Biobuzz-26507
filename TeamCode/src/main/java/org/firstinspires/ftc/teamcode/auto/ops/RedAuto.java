@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.auto.ops;
 import static com.pedropathing.ivy.Scheduler.schedule;
 
 import com.pedropathing.ivy.Scheduler;
+import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.auto.paths.PathsAndPoses;
 import org.firstinspires.ftc.teamcode.auto.routines.Routines;
@@ -20,6 +21,7 @@ public class RedAuto extends NextOpMode {
     private Routines routines;
     private AutoCommands commands;
     private PathsAndPoses paths;
+    private boolean logFirstHeading;
 
     public RedAuto(Robot robot) {
         super(robot);
@@ -34,13 +36,27 @@ public class RedAuto extends NextOpMode {
     @Override
     public void start() {
         robot.getFollower().setPose(paths.startPose);
+        logFirstHeading = true;
         schedule(routines.test());
     }
 
     @Override
     public void periodic() {
         robot.getFollower().update();
-        Scheduler.execute();
+
+        double targetHeading = Math.toDegrees(paths.startPose.heading());
+        double measuredHeading = Math.toDegrees(robot.getFollower().pose().heading());
+        double headingError = Math.IEEEremainder(targetHeading - measuredHeading, 360.0);
+        telemetry.addData("Target heading (deg)", "%.1f", targetHeading);
+        telemetry.addData("Measured heading (deg)", "%.1f", measuredHeading);
+        telemetry.addData("Heading error (deg)", "%.1f", headingError);
+        telemetry.update();
+
+        if (logFirstHeading) {
+            RobotLog.ii("RedAuto", "First sensor update: target=%.1f deg, measured=%.1f deg, error=%.1f deg",
+                    targetHeading, measuredHeading, headingError);
+            logFirstHeading = false;
+        }
     }
 
     @Override
