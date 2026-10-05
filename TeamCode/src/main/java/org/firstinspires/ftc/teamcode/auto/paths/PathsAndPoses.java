@@ -24,6 +24,6 @@ public class PathsAndPoses {
     public Pose endPose = poseFactory.of(56, 20, 90);
 
     public Path startPath() {
-        return Paths.line(startPose, endPose);
+        return Paths.line(startPose, endPose).constant(startPose);
     }
 }

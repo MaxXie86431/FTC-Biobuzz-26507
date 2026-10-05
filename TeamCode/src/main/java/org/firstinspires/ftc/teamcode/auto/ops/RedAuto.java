@@ -10,8 +10,7 @@ import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.utils.Alliance;
 import org.firstinspires.ftc.teamcode.utils.AutoCommands;
 
-import java.nio.file.Path;
-
+import dev.nextftc.robot.Telemetry;
 import dev.nextftc.robot.opmode.NextAutonomous;
 import dev.nextftc.robot.opmode.NextOpMode;
 
@@ -42,6 +41,12 @@ public class RedAuto extends NextOpMode {
     public void periodic() {
         robot.getFollower().update();
         Scheduler.execute();
+    }
+
+    @Override
+    public void end() {
+        Telemetry.log("Auto Finished");
+        Telemetry.update();
     }
 
 }
