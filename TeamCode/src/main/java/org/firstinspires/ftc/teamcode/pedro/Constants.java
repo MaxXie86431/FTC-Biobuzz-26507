@@ -14,74 +14,54 @@ import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 public class Constants {
-
-    /*
-     * THESE ARE ONLY FOR USE IN RUNNING THE TUNING OPMODES IN VIRTUAL_ROBOT, WHICH
-     * ARE DISABLED BY DEFAULT. THERE SHOULD BE NO NEED TO RETUNE.  THEY ARE
-     * NOT NEEDED FOR A REAL ROBOT!! THEY ALSO ARE NOT NEEDED FOR YOUR CUSTOM OPMODES
-     * OR THE TESTING OPMODES IN VIRTUAL_ROBOT.
-     */
-    public static double tuningHeadingLinear = 0.0;
-    public static double tuningHeadingQuadratic = 0.0;
-    public static double tuningHeading = 0.0;
-    public static double tuningForwardLinear = 0.0;
-    public static double tuningForwardQuadratic = 0.0;
-    public static double tuningStrafeLinear = 0.0;
-    public static double tuningStrafeQuadratic = 0.0;
-
-    /*
-     * THE TUNING VALUES BELOW ARE FOR THE MecDynamicBot CONFIGURATION OF
-     * VIRTUAL_ROBOT. THAT IS THE RECOMMENDED CONFIGURATION FOR USING
-     * PEDROPATHING.
-     *
-     * THERE SHOULD BE NO NEED TO RETUNE, AS THESE HAVE BEEN CREATED BY RUNNING
-     * THE TUNING OPMODES OF THE PEDRO QUICKSTART (ADAPTED AS NEEDED FOR THE
-     * VIRTUAL_ROBOT PROJECT).
-     */
-
     public static MecanumConfig drivetrainConfig = new MecanumConfig(
             c -> {
                 c.frontLeftName.set("FrontLeft");
-                c.backLeftName.set("BackLeft");
                 c.frontRightName.set("FrontRight");
+                c.backLeftName.set("BackLeft");
                 c.backRightName.set("BackRight");
-                c.frontLeftDirection.set(DcMotorSimple.Direction.FORWARD);
-                c.backLeftDirection.set(DcMotorSimple.Direction.FORWARD);
-                c.frontRightDirection.set(DcMotorSimple.Direction.REVERSE);
-                c.backRightDirection.set(DcMotorSimple.Direction.FORWARD);
-                c.manualBrakeMode.set(true);
+                c.frontLeftDirection.set(DcMotorSimple.Direction.REVERSE);
+                c.frontRightDirection.set(DcMotorSimple.Direction.FORWARD);
+                c.backLeftDirection.set(DcMotorSimple.Direction.REVERSE);
+                c.backRightDirection.set(DcMotorSimple.Direction.REVERSE);
+
             }
     );
+
     public static PinpointConfig localizerConfig = new PinpointConfig(
             c -> {
                 c.name.set("pinpoint");
-                c.xPodOffset.set(3.937);
-                c.yPodOffset.set(3.937);
+                c.podType.set(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+                c.xPodOffset.set(-7.5);
+                c.yPodOffset.set(7.5);
                 c.xPodDirection.set(GoBildaPinpointDriver.EncoderDirection.FORWARD);
-                c.yPodDirection.set(GoBildaPinpointDriver.EncoderDirection.FORWARD);
+                c.yPodDirection.set(GoBildaPinpointDriver.EncoderDirection.REVERSED);
+                c.globalDistanceUnit.set(DistanceUnit.INCH);
+                c.offsetUnits.set(DistanceUnit.INCH);
             }
     );
+
     public static ForesightConfig foresightConfig = new ForesightConfig(
             c -> {
-                Controller primaryTranslationalForward = Controller.proportional(0.29);
-                Controller secondaryTranslationalForward = Controller.proportional(0.11);
-                Controller primaryTranslationalLateral = Controller.proportional(0.29);
-                Controller secondaryTranslationalLateral = Controller.proportional(0.11);
-//                c.forwardTranslational.set(secondaryTranslationalForward);
-//                c.strafeTranslational.set(secondaryTranslationalLateral);
+                Controller primaryTranslationalForward = Controller.proportional(0.3);
+                Controller secondaryTranslationalForward = Controller.proportional(0.1);
+                Controller primaryTranslationalLateral = Controller.proportional(0.3);
+                Controller secondaryTranslationalLateral = Controller.proportional(0.1);
                 c.forwardTranslational.set(Controller.piecewise(secondaryTranslationalForward).put(2.5, primaryTranslationalForward));
                 c.strafeTranslational.set(Controller.piecewise(secondaryTranslationalLateral).put(2.5, primaryTranslationalLateral));
-                c.coast.set(Controller.proportionalFeedforward(0.02));
-                c.brake.set(Controller.proportionalFeedforward(0.017));
-                c.headingFeedback.set(Controller.proportional(3.14));
-                c.headingBrakeCoefficients.set(Vector2D.cartesian(0.045, 0.0022));
-                c.linearBrakeCoefficients.set(Matrix.diag(0.11, 0.14));
-                c.quadraticBrakeCoefficients.set(Matrix.diag(0.0017, 1.6e-4));
-                c.maxAchievableForwardVelocity.set(49.9);
-                c.maxAchievableStrafeVelocity.set(49.9);
-                c.naturalForwardDeceleration.set(24.4);
-                c.naturalStrafeDeceleration.set(24.4);
+                c.coast.set(Controller.proportionalFeedforward(0.010978350889324107));
+                c.brake.set(Controller.proportionalFeedforward(0.008731598255925491));
+                c.headingFeedback.set(Controller.proportional(5.258721785960744));
+                c.headingBrakeCoefficients.set(Vector2D.cartesian(0.05642143125655298, 0.0063829525363003695));
+                c.linearBrakeCoefficients.set(Matrix.diag(0.10605894992901523, 0.08719146175596092));
+                c.quadraticBrakeCoefficients.set(Matrix.diag(0.0014663966976606565, 0.0013837064502458813));
+                c.maxAchievableForwardVelocity.set(72.72923108818539);
+                c.maxAchievableStrafeVelocity.set(52.34323936525474);
+                c.naturalForwardDeceleration.set(85.01144677379789);
+                c.naturalStrafeDeceleration.set(104.49787535782846);
             }
     );
 

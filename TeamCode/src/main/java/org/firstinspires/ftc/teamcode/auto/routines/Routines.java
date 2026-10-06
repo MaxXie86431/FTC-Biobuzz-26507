@@ -22,7 +22,6 @@ public class Routines {
 
     public Command test() {
         return sequential(
-            // Keep the intake running while driving, then stop it when the path finishes.
             deadline(
                 commands.runPath(paths.startPath()),
                 robot.getIntake().intake()

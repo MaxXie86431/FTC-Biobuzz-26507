@@ -26,10 +26,10 @@ public class Robot implements NextRobot {
     private final Flywheel flywheel = new Flywheel();
     public Robot() {}
 
+    public void createFollower() {
+        follower = Constants.create(RobotController.hardwareMap());
+    }
     public Follower getFollower() {
-        if (follower == null) {
-            follower = Constants.create(RobotController.hardwareMap());
-        }
         return follower;
     }
 
@@ -55,6 +55,6 @@ public class Robot implements NextRobot {
     @NonNull
     @Override
     public Set<Mechanism> getMechanisms() {
-        return Set.of(drivetrain, intake);
+        return Set.of(drivetrain, intake, flywheel);
     }
 }
