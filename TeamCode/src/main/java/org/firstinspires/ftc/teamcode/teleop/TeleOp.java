@@ -11,13 +11,18 @@ import com.pedropathing.ivy.Scheduler;
 import com.pedropathing.ivy.commands.Commands;
 
 import org.firstinspires.ftc.teamcode.robot.Robot;
+import org.firstinspires.ftc.teamcode.utils.PoseTracker;
 
 @NextTeleop(name = "TeleOp")
 public class TeleOp extends NextOpMode{
     private final Robot robot;
+    private final PoseTracker poseTracker;
     public TeleOp(Robot robot) {
         super(robot);
         this.robot = robot;
+
+        robot.createFollower();
+        poseTracker = new PoseTracker(robot.getFollower());
 
         Scheduler.reset();
         this.robot.init().schedule();
@@ -53,6 +58,7 @@ public class TeleOp extends NextOpMode{
     public void periodic() {
         telemetry.addData("Launcher Motor Power", robot.getFlywheel().getPower());
         telemetry.addData("Flywheel RPM", robot.getFlywheel().flywheel.getEncoderVelocity().into(RotationsPerMinute));
+        telemetry.addData("Pose", "x: %.1f, y: %.1f, h: %.1f°", poseTracker.getX(), poseTracker.getY(), Math.toDegrees(poseTracker.getHeading()));
         telemetry.update();
     }
 

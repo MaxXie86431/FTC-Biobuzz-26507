@@ -17,7 +17,8 @@ public class PoseTracker {
     }
 
     public void update() {
-        follower.update();
+        // only update odometry; follower.update() would stop the drive motors when no path is running
+        follower.localizer.update();
     }
 
     public Pose getPosition() {
