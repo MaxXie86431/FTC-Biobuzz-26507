@@ -11,23 +11,29 @@ import dev.nextftc.hardware.RobotController;
 public class Intake implements Mechanism {
 
     NextMotor intakeMotor = new NextMotor(RobotController.controlHub(), 3);
-    public static double intakeValue=0.61;
+    NextMotor intermediateMotor = new NextMotor(RobotController.controlHub(), 2);
+
+    public static double intakeValue = 0.61;
+    public static double intermediateValue = 1.0;
 
     public Command intake() {
-        return infinite(() ->
-                intakeMotor.setThrottle(-intakeValue)
-        );
+        return infinite(() -> {
+            intakeMotor.setThrottle(-intakeValue);
+            intermediateMotor.setThrottle(-intermediateValue);
+        });
     }
 
     public Command outtake() {
-        return infinite(() ->
-                intakeMotor.setThrottle(intakeValue)
-        );
+        return infinite(() -> {
+            intakeMotor.setThrottle(intakeValue);
+            intermediateMotor.setThrottle(intermediateValue);
+        });
     }
 
     public Command stop() {
-        return instant(() ->
-                intakeMotor.setThrottle(0.0)
-        );
+        return instant(() -> {
+            intakeMotor.setThrottle(0.0);
+            intermediateMotor.setThrottle(0.0);
+        });
     }
 }

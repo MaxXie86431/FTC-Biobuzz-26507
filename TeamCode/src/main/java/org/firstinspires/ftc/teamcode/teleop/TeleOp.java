@@ -47,11 +47,6 @@ public class TeleOp extends NextOpMode{
         
         gp1.dpadUp().onTrue(robot.getFlywheel().increasePower());
         gp1.dpadDown().onTrue(robot.getFlywheel().decreasePower());
-        // Roller 2
-        gp1.circle().onTrue(robot.getIntermediate().rollup());
-        gp1.circle().onFalse(robot.getIntermediate().stop());
-        gp1.triangle().onTrue(robot.getIntermediate().rolldown());
-        gp1.triangle().onFalse(robot.getIntermediate().stop());
     }
 
     @Override
