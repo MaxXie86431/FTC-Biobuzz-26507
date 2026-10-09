@@ -5,11 +5,14 @@ import com.pedropathing.ivy.Command;
 import dev.nextftc.robot.Mechanism;
 import dev.nextftc.hardware.actuators.NextMotor;
 import dev.nextftc.hardware.RobotController;
-import static dev.nextftc.units.Units.DegreesPerSecond;
+import static dev.nextftc.units.Units.Degrees;
+import static dev.nextftc.units.Units.RotationsPerMinute;
 
 public class Flywheel implements Mechanism {
 
-    public final NextMotor flywheel = new NextMotor(RobotController.expansionHub(), 1);
+    // REV HD Hex 20:1 -> 28 counts per motor rev * 20 = 560 counts per output rev
+    public final NextMotor flywheel =
+            new NextMotor(RobotController.expansionHub(), 1, Degrees.of(360.0 / 560));
     private double power = 0.7;
 
     public Flywheel() {
@@ -30,7 +33,7 @@ public class Flywheel implements Mechanism {
     }
 
     public Command increasePower() {
-        return instant(() -> power = power + 0.1);
+        return instant(() -> power = Math.min(1.0, power + 0.1));
     }
 
     public Command decreasePower() {
@@ -51,7 +54,7 @@ public class Flywheel implements Mechanism {
 
     public Command setRPM() {
         return instant(() -> 
-                flywheel.setVelocitySetpoint(DegreesPerSecond.of(6000))
+                flywheel.setVelocitySetpoint(RotationsPerMinute.of(250))
         );
     }
 }
