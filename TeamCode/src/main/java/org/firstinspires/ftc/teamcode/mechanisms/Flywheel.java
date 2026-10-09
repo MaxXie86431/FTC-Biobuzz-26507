@@ -49,9 +49,9 @@ public class Flywheel implements Mechanism {
         );
     }
 
-    public Command setRPM(int rpm) {
+    public Command setRPM() {
         return instant(() -> 
-                flywheel.setVelocitySetpoint(DegreesPerSecond.of(6 * rpm))
+                flywheel.setVelocitySetpoint(DegreesPerSecond.of(6000))
         );
     }
 }
