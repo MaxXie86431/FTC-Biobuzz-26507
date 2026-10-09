@@ -57,6 +57,7 @@ public class TeleOp extends NextOpMode{
     @Override
     public void periodic() {
         telemetry.addData("Launcher Motor Power", robot.getFlywheel().getPower());
+        telemetry.addData("Flywheel RPM", robot.getFlywheel().flywheel.getEncoderVelocity().into(RotationsPerMinute));
         telemetry.update();
     }
 

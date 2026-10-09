@@ -25,7 +25,6 @@ public class Flywheel implements Mechanism {
     public double getPower() {
         return power;
     }
-
     public Command rollout() {
         return infinite(() ->
                 flywheel.setThrottle(power)   // read every loop
