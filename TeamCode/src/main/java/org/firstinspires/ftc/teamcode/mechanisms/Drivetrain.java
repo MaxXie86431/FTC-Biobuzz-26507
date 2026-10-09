@@ -11,6 +11,11 @@ import com.pedropathing.ivy.Command;
 public class Drivetrain implements Mechanism{
     public Drivetrain(){
         frontRight.setDirection(NextMotor.Direction.REVERSE);
+
+        frontLeft.setZeroPowerBehavior(NextMotor.ZeroPowerBehavior.BRAKE);
+        frontRight.setZeroPowerBehavior(NextMotor.ZeroPowerBehavior.BRAKE);
+        backLeft.setZeroPowerBehavior(NextMotor.ZeroPowerBehavior.BRAKE);
+        backRight.setZeroPowerBehavior(NextMotor.ZeroPowerBehavior.BRAKE);
     }
 
     public final NextMotor frontLeft = new NextMotor(RobotController.controlHub(), 1);

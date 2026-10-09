@@ -32,14 +32,14 @@ public class Flywheel implements Mechanism {
     }
 
     public Command increasePower() {
-        return instant(() -> power = Math.min(1.0, power + 0.1));
+        return instant(() -> power = Math.min(1.0, power + 0.05));
     }
 
     public Command decreasePower() {
-        return instant(() -> power = Math.max(0.0, power - 0.1));
+        return instant(() -> power = Math.max(0.0, power - 0.05));
     }
 
-    public Command rollin() {
+    public Command rollIn() {
         return infinite(() ->
                 flywheel.setThrottle(-1)
         );

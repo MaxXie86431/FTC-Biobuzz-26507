@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.mechanisms;
 
+import static com.pedropathing.ivy.groups.Groups.parallel;
+
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.ivy.Command;
 
@@ -17,14 +19,14 @@ public class Intake implements Mechanism {
     public static double intermediateValue = 1.0;
 
     public Command intake() {
-        return infinite(() -> {
+        return instant(() -> {
             intakeMotor.setThrottle(-intakeValue);
             intermediateMotor.setThrottle(-intermediateValue);
         });
     }
 
     public Command outtake() {
-        return infinite(() -> {
+        return instant(() -> {
             intakeMotor.setThrottle(intakeValue);
             intermediateMotor.setThrottle(intermediateValue);
         });
