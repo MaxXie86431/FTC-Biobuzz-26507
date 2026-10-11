@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.mechanisms;
 
-import static com.pedropathing.ivy.groups.Groups.parallel;
-
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.ivy.Command;
 
@@ -13,29 +11,32 @@ import dev.nextftc.hardware.RobotController;
 public class Intake implements Mechanism {
 
     NextMotor intakeMotor = new NextMotor(RobotController.controlHub(), 3);
-    NextMotor intermediateMotor = new NextMotor(RobotController.controlHub(), 2);
+    private final Intermediate intermediate;
 
     public static double intakeValue = 0.61;
-    public static double intermediateValue = 1.0;
+
+    public Intake(Intermediate intermediate) {
+        this.intermediate = intermediate;
+    }
 
     public Command intake() {
         return instant(() -> {
             intakeMotor.setThrottle(-intakeValue);
-            intermediateMotor.setThrottle(-intermediateValue);
-        });
+            intermediate.forward();
+        }).requiring(this, intermediate);
     }
 
     public Command outtake() {
         return instant(() -> {
             intakeMotor.setThrottle(intakeValue);
-            intermediateMotor.setThrottle(intermediateValue);
-        });
+            intermediate.reverse();
+        }).requiring(this, intermediate);
     }
 
     public Command stop() {
         return instant(() -> {
             intakeMotor.setThrottle(0.0);
-            intermediateMotor.setThrottle(0.0);
-        });
+            intermediate.stop();
+        }).requiring(this, intermediate);
     }
 }

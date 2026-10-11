@@ -6,8 +6,6 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Command;
 import com.pedropathing.paths.Path;
 
-import org.firstinspires.ftc.teamcode.auto.paths.PathsAndPoses;
-
 public class AutoCommands {
     private final Follower follower;
 

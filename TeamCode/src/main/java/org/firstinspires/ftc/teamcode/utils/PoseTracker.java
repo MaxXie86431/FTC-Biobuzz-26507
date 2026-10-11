@@ -9,11 +9,11 @@ public class PoseTracker {
     private final Follower follower;
 
     private final PoseFactory p = PoseFactory.degrees();
-    private final Pose startPose = p.of(0, 0, 0);
+    //private final Pose startPose = p.of(0, 0, 0);
 
     public PoseTracker(Follower follower) {
         this.follower = follower;
-        follower.setPose(startPose);
+        //follower.setPose(startPose);
     }
 
     public void update() {

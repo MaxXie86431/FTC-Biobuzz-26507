@@ -14,14 +14,16 @@ import dev.nextftc.robot.NextRobot;
 import org.firstinspires.ftc.teamcode.mechanisms.Drivetrain;
 import org.firstinspires.ftc.teamcode.mechanisms.Flywheel;
 import org.firstinspires.ftc.teamcode.mechanisms.Intake;
+import org.firstinspires.ftc.teamcode.mechanisms.Intermediate;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 
 public class Robot implements NextRobot {
     private  Follower follower;
 
     private final Drivetrain drivetrain = new Drivetrain();
-    private final Intake intake = new Intake();
-    private final Flywheel flywheel = new Flywheel();
+    private final Intermediate intermediate = new Intermediate();
+    private final Intake intake = new Intake(intermediate);
+    private final Flywheel flywheel = new Flywheel(intermediate);
     public Robot() {}
 
     public void createFollower() {
@@ -39,6 +41,10 @@ public class Robot implements NextRobot {
         return intake;
     }
 
+    public Intermediate getIntermediate() {
+        return intermediate;
+    }
+
     public Flywheel getFlywheel(){ return flywheel; }
 
     public Command init() {
@@ -49,6 +55,6 @@ public class Robot implements NextRobot {
     @NonNull
     @Override
     public Set<Mechanism> getMechanisms() {
-        return Set.of(drivetrain, intake, flywheel);
+        return Set.of(drivetrain, intermediate, intake, flywheel);
     }
 }

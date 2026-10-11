@@ -5,7 +5,7 @@ import static com.pedropathing.ivy.Scheduler.schedule;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Scheduler;
 
-import org.firstinspires.ftc.teamcode.auto.paths.PathsAndPoses;
+import org.firstinspires.ftc.teamcode.auto.pathing.Paths;
 import org.firstinspires.ftc.teamcode.auto.routines.Routines;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.utils.Alliance;
@@ -18,7 +18,8 @@ import dev.nextftc.robot.opmode.NextOpMode;
 public class RedAuto extends NextOpMode {
     private final Follower follower;
     private final Routines routines;
-    private final PathsAndPoses paths;
+    private final Paths paths;
+    private final Alliance alliance = Alliance.RED;
 
     public RedAuto(Robot robot) {
         super(robot);
@@ -26,13 +27,13 @@ public class RedAuto extends NextOpMode {
 
         robot.createFollower();
         follower = robot.getFollower();
-        paths = new PathsAndPoses(Alliance.RED);
+        paths = new Paths(alliance);
         routines = new Routines(robot, paths, new AutoCommands(follower));
     }
 
     @Override
     public void start() {
-        follower.setPose(PathsAndPoses.startPose);
+        follower.setPose(paths.getStartPose());
         schedule(routines.test());
     }
 
