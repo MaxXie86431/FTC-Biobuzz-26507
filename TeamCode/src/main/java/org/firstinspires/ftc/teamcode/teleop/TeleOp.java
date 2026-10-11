@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.teleop;
 
 import static dev.nextftc.units.Units.RotationsPerMinute;
 
+import dev.nextftc.hardware.actuators.NextMotor;
 import dev.nextftc.robot.opmode.NextOpMode;
 import dev.nextftc.robot.opmode.NextTeleop;
 import dev.nextftc.robot.triggers.CommandGamepad;
@@ -34,6 +35,11 @@ public class TeleOp extends NextOpMode{
 
         CommandGamepad gp1 = new CommandGamepad(gamepad1);
         CommandGamepad gp2 = new CommandGamepad(gamepad2);
+
+        robot.getDrivetrain().frontLeft.setZeroPowerBehavior(NextMotor.ZeroPowerBehavior.BRAKE);
+        robot.getDrivetrain().frontRight.setZeroPowerBehavior(NextMotor.ZeroPowerBehavior.BRAKE);
+        robot.getDrivetrain().backLeft.setZeroPowerBehavior(NextMotor.ZeroPowerBehavior.BRAKE);
+        robot.getDrivetrain().backRight.setZeroPowerBehavior(NextMotor.ZeroPowerBehavior.BRAKE);
         robot.getDrivetrain().drive(gamepad1);
 
         // Intake
