@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.mechanisms;
 import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.commands.Commands;
 
+import java.util.function.DoubleSupplier;
+
 import dev.nextftc.robot.Mechanism;
 import dev.nextftc.hardware.actuators.NextMotor;
 import dev.nextftc.hardware.RobotController;
@@ -42,11 +44,11 @@ public class Flywheel implements Mechanism {
 
     public Command increasePower() {
         // Adjust the setting without interrupting the active launch command.
-        return Commands.instant(() -> power = Math.min(1.0, power + 0.05));
+        return Commands.instant(() -> power = Math.min(1.0, power + 0.01));
     }
 
     public Command decreasePower() {
-        return Commands.instant(() -> power = Math.max(0.0, power - 0.05));
+        return Commands.instant(() -> power = Math.max(0.0, power - 0.01));
     }
 
     public Command rollIn() {
@@ -64,9 +66,27 @@ public class Flywheel implements Mechanism {
     }
 
     public Command setRPM(double rpm) {
+        return setRPM(() -> rpm);
+    }
+
+    public Command setRPM(DoubleSupplier rpm) {
         return infinite(() -> {
-            flywheel.setVelocitySetpoint(RotationsPerMinute.of(rpm));
+            flywheel.setVelocitySetpoint(RotationsPerMinute.of(rpm.getAsDouble()));   // read every loop
             intermediate.forward();
         }).requiring(this, intermediate);
+    }
+
+    // distances (inches) our shooting data covers
+    public static final double MIN_DISTANCE = 21.5;
+    public static final double MAX_DISTANCE = 44;
+
+    public boolean inShootingRange(double distance) {
+        return distance >= MIN_DISTANCE && distance <= MAX_DISTANCE;
+    }
+
+    public double calculateRPM( double distance) {
+        // outside the tested range, use the closest tested distance instead of guessing
+        distance = Math.max(MIN_DISTANCE, Math.min(MAX_DISTANCE, distance));
+        return ( 0.761321 * distance + 107.87642 );
     }
 }

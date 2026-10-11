@@ -12,6 +12,7 @@ import com.pedropathing.ivy.Scheduler;
 import com.pedropathing.ivy.commands.Commands;
 
 import org.firstinspires.ftc.teamcode.robot.Robot;
+import org.firstinspires.ftc.teamcode.utils.Alliance;
 import org.firstinspires.ftc.teamcode.utils.PoseTracker;
 
 @NextTeleop(name = "TeleOp")
@@ -53,7 +54,7 @@ public class TeleOp extends NextOpMode{
         gp1.rightTrigger().isOver(0.2).onFalse(robot.getFlywheel().stop());
         gp1.rightBumper().onTrue(robot.getFlywheel().rollIn());
         gp1.rightBumper().onFalse(robot.getFlywheel().stop());
-        gp1.cross().onTrue(robot.getFlywheel().setRPM(150));
+        gp1.cross().onTrue(robot.getFlywheel().setRPM(() -> robot.getFlywheel().calculateRPM(poseTracker.distanceToGoal(Alliance.RED))));
         gp1.cross().onFalse(robot.getFlywheel().stop());
         
         gp1.dpadUp().onTrue(robot.getFlywheel().increasePower());
@@ -62,9 +63,13 @@ public class TeleOp extends NextOpMode{
 
     @Override
     public void periodic() {
+        poseTracker.update();
         telemetry.addData("Launcher Motor Power", robot.getFlywheel().getPower());
         telemetry.addData("Flywheel RPM", robot.getFlywheel().flywheel.getEncoderVelocity().into(RotationsPerMinute));
         telemetry.addData("Pose", "x: %.1f, y: %.1f, h: %.1f°", poseTracker.getX(), poseTracker.getY(), Math.toDegrees(poseTracker.getHeading()));
+        double distance = poseTracker.distanceToGoal(Alliance.RED);
+        telemetry.addData("Distance to Goal", "%.1f in%s", distance, robot.getFlywheel().inShootingRange(distance) ? "" : " (OUT OF RANGE)");
+        telemetry.addData("Target RPM", "%.1f", robot.getFlywheel().calculateRPM(distance));
         telemetry.update();
     }
 

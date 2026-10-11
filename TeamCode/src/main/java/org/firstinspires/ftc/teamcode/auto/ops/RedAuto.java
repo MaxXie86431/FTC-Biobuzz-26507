@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.auto.routines.Routines;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.utils.Alliance;
 import org.firstinspires.ftc.teamcode.utils.AutoCommands;
+import org.firstinspires.ftc.teamcode.utils.PoseTracker;
 
 import dev.nextftc.robot.opmode.NextAutonomous;
 import dev.nextftc.robot.opmode.NextOpMode;
@@ -28,6 +29,7 @@ public class RedAuto extends NextOpMode {
         robot.createFollower();
         follower = robot.getFollower();
         paths = new Paths(alliance);
+        follower.setPose(paths.getStartPose());   // follower holds the start pose from init, not just after start
         routines = new Routines(robot, paths, new AutoCommands(follower));
     }
 
@@ -40,6 +42,7 @@ public class RedAuto extends NextOpMode {
     @Override
     public void periodic() {
         follower.update();
+        PoseTracker.saveAutoEndPose(follower.pose());   // TeleOp picks up where auto ended
     }
 
     @Override
