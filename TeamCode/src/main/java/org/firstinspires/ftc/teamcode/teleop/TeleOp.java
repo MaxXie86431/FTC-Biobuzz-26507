@@ -11,7 +11,6 @@ import dev.nextftc.robot.opmode.NextOpMode;
 import dev.nextftc.robot.opmode.NextTeleop;
 import dev.nextftc.robot.triggers.CommandGamepad;
 import dev.nextftc.robot.triggers.Trigger;
-import kotlinx.coroutines.Delay;
 
 import com.pedropathing.ivy.Scheduler;
 import com.pedropathing.ivy.commands.Commands;
