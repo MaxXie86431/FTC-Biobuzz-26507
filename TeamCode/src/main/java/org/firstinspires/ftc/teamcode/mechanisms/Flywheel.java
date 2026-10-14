@@ -1,5 +1,10 @@
 package org.firstinspires.ftc.teamcode.mechanisms;
 
+import static com.pedropathing.ivy.commands.Commands.waitMs;
+import static com.pedropathing.ivy.groups.Groups.deadline;
+import static com.pedropathing.ivy.groups.Groups.repeat;
+import static com.pedropathing.ivy.groups.Groups.sequential;
+
 import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.commands.Commands;
 
@@ -41,12 +46,11 @@ public class Flywheel implements Mechanism {
     }
 
     public Command increasePower() {
-        // Adjust the setting without interrupting the active launch command.
-        return Commands.instant(() -> power = Math.min(1.0, power + 0.05));
+        return instant(() -> power = Math.min(1.0, power + 0.01));
     }
 
     public Command decreasePower() {
-        return Commands.instant(() -> power = Math.max(0.0, power - 0.05));
+        return instant(() -> power = Math.max(0.0, power - 0.01));
     }
 
     public Command rollIn() {
@@ -69,4 +73,26 @@ public class Flywheel implements Mechanism {
             intermediate.forward();
         }).requiring(this, intermediate);
     }
+
+    public Command shoot(int balls, int intermediateDelay) {
+        return sequential(
+            deadline(
+                sequential(
+                    // Let the flywheel charge up before feeding the first ball.
+                    waitMs(4000),
+                    repeat(
+                        sequential(
+                            instant(intermediate::forward).requiring(intermediate),
+                            waitMs(intermediateDelay),
+                            instant(intermediate::stop).requiring(intermediate)
+                        ), balls
+                    )
+                ),
+                // Keep the flywheel spinning until every ball has been fed.
+                infinite(() -> flywheel.setThrottle(power)).requiring(this)
+            ),
+            this.stop()
+        );
+    }
 }
+

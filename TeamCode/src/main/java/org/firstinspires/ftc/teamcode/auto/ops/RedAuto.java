@@ -34,7 +34,8 @@ public class RedAuto extends NextOpMode {
     @Override
     public void start() {
         follower.setPose(paths.getStartPose());
-        schedule(routines.test());
+        //schedule(routines.test());
+        schedule(routines.autoPath(true));
     }
 
     @Override

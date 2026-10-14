@@ -11,6 +11,7 @@ import com.pedropathing.ivy.Command;
 public class Drivetrain implements Mechanism{
     public Drivetrain(){
         frontRight.setDirection(NextMotor.Direction.REVERSE);
+
     }
 
     public NextMotor frontLeft = new NextMotor(RobotController.controlHub(), 1);
