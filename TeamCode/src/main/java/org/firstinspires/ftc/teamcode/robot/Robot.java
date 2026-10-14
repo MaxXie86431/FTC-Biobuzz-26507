@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.mechanisms.Drivetrain;
 import org.firstinspires.ftc.teamcode.mechanisms.Flywheel;
 import org.firstinspires.ftc.teamcode.mechanisms.Intake;
 import org.firstinspires.ftc.teamcode.mechanisms.Intermediate;
+import org.firstinspires.ftc.teamcode.mechanisms.Servo;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 
 public class Robot implements NextRobot {
@@ -24,6 +25,7 @@ public class Robot implements NextRobot {
     private final Intermediate intermediate = new Intermediate();
     private final Intake intake = new Intake(intermediate);
     private final Flywheel flywheel = new Flywheel(intermediate);
+    private final Servo servo = new Servo();
     public Robot() {}
 
     public void createFollower() {
@@ -43,6 +45,10 @@ public class Robot implements NextRobot {
 
     public Intermediate getIntermediate() {
         return intermediate;
+    }
+
+    public Servo getServo() {
+        return servo;
     }
 
     public Flywheel getFlywheel(){ return flywheel; }

@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
+import static com.pedropathing.ivy.commands.Commands.instant;
+import static com.pedropathing.ivy.commands.Commands.waitMs;
+import static com.pedropathing.ivy.groups.Groups.parallel;
+import static com.pedropathing.ivy.groups.Groups.sequential;
 import static dev.nextftc.units.Units.RotationsPerMinute;
 
 import dev.nextftc.hardware.actuators.NextMotor;
@@ -7,6 +11,7 @@ import dev.nextftc.robot.opmode.NextOpMode;
 import dev.nextftc.robot.opmode.NextTeleop;
 import dev.nextftc.robot.triggers.CommandGamepad;
 import dev.nextftc.robot.triggers.Trigger;
+import kotlinx.coroutines.Delay;
 
 import com.pedropathing.ivy.Scheduler;
 import com.pedropathing.ivy.commands.Commands;
@@ -50,10 +55,33 @@ public class TeleOp extends NextOpMode{
         gp1.leftBumper().onFalse(robot.getIntake().stop());
 
         // Flywheel
-        gp1.rightTrigger().isOver(0.2).onTrue(robot.getFlywheel().rollout());
-        gp1.rightTrigger().isOver(0.2).onFalse(robot.getFlywheel().stop());
-        gp1.rightBumper().onTrue(robot.getFlywheel().rollIn());
-        gp1.rightBumper().onFalse(robot.getFlywheel().stop());
+        gp1.rightTrigger().isOver(0.2).onTrue(
+                parallel(
+                        robot.getFlywheel().rollout(),
+                        sequential(
+                                waitMs(3000),
+                                robot.getServo().move()
+                        )
+                )
+        );
+        gp1.rightTrigger().isOver(0.2).onFalse(
+                parallel(
+                        robot.getFlywheel().stop(),
+                        robot.getServo().reset()
+                )
+        );
+        gp1.rightBumper().onTrue(
+                instant(() -> sequential(
+                        robot.getServo().move(),
+                        robot.getFlywheel().rollIn()
+                ).schedule())
+        );
+        gp1.rightBumper().onFalse(
+                sequential(
+                        robot.getFlywheel().stop(),
+                        robot.getServo().reset()
+                )
+        );
         gp1.cross().onTrue(robot.getFlywheel().setRPM(() -> robot.getFlywheel().calculateRPM(poseTracker.distanceToGoal(Alliance.RED))));
         gp1.cross().onFalse(robot.getFlywheel().stop());
         
