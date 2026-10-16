@@ -32,17 +32,35 @@ public class Routines {
     }*/
 
     public Command autoPath(boolean isBottom) {
-        return sequential(
-            commands.runPath(paths.startShootPath(isBottom)),
-            robot.getFlywheel().shoot(4, 1000),
-            commands.runPath(paths.shootCollectPath(isBottom)),
-            robot.getIntake().intake(),
-            waitMs(100),
-            commands.runPath(paths.collect1and2Path(isBottom)),
-            robot.getIntake().stop(),
-            commands.runPath(paths.collectShootPath(isBottom)),
-            robot.getFlywheel().shoot(4, 1000),
-            commands.runPath(paths.shootLoadingPath(isBottom))
-        );
+        if (isBottom) {
+            return sequential(
+                commands.runPath(paths.startShootPath(isBottom)),
+                robot.getFlywheel().shoot(4, 1000),
+                commands.runPath(paths.shootCollectPath(isBottom)),
+                robot.getIntake().intake(),
+                waitMs(100),
+                commands.runPath(paths.collect1and2Path(isBottom)),
+                robot.getIntake().stop(),
+                commands.runPath(paths.collectShootTransPath(isBottom)),
+                commands.runPath(paths.collectShootPath(isBottom)),
+                robot.getFlywheel().shoot(4, 1000),
+                commands.runPath(paths.bottomShootLoadingTransPath()),
+                commands.runPath(paths.shootLoadingPath(isBottom))
+            );
+        } else {
+            return sequential(
+                commands.runPath(paths.startShootPath(isBottom)),
+                robot.getFlywheel().shoot(4, 1000),
+                commands.runPath(paths.shootCollectPath(isBottom)),
+                robot.getIntake().intake(),
+                waitMs(100),
+                commands.runPath(paths.collect1and2Path(isBottom)),
+                robot.getIntake().stop(),
+                commands.runPath(paths.collectShootTransPath(isBottom)),
+                commands.runPath(paths.collectShootPath(isBottom)),
+                robot.getFlywheel().shoot(4, 1000),
+                commands.runPath(paths.shootLoadingPath(isBottom))
+            );
+        }
     }
 }

@@ -18,6 +18,9 @@ public class Paths {
     private Pose topCollect1Pose;
     private Pose topCollect2Pose;
     private Pose endPose;
+    private Pose bottomCollectToTopLaunchTransition;
+    private Pose topCollectToBottomLaunchTransition;
+    private Pose bottomLaunchToEndPoseTransition;
 
     public Paths(Alliance alliance){
         if (alliance == Alliance.BLUE) {
@@ -41,20 +44,17 @@ public class Paths {
         topCollect1Pose = assign(Poses.topCollect1Pose);
         topCollect2Pose = assign(Poses.topCollect2Pose);
         endPose = assign(Poses.endPose);
+        bottomCollectToTopLaunchTransition = assign(Poses.bottomCollectToTopLaunchTransition);
+        topCollectToBottomLaunchTransition = assign(Poses.topCollectToBottomLaunchTransition);
+        bottomLaunchToEndPoseTransition = assign(Poses.bottomLaunchToEndPoseTransition);
 
 
     }
 
     /*
-    public static PoseFactory factory = PoseFactory.degrees();
-    public static Pose startPose = factory.of(56, 8, 90);
-    public static Pose bottomLaunchPose = factory.of(56, 80, 90);
-    public static Pose topLaunchPose = factory.of(56, 110, 270);
-    public static Pose bottomCollect1Pose = factory.of(20, 8, 180);
-    public static Pose bottomCollect2Pose = factory.of(8, 8, 180);
-    public static Pose topCollect1Pose = factory.of(113, 133, 0);
-    public static Pose topCollect2Pose = factory.of(133, 133, 0);
-    public static Pose endPose = factory.of(8, 106, 0);
+    public static Pose bottomCollectToTopLaunchTransition = factory.of(56, 8, 0);
+    public static Pose topCollectToBottomLaunchTransition = factory.of(56, 133, 0);
+    public static Pose bottomLaunchToEndPoseTransition = factory.of(8, 80, 0);
     */
 
     public Path startShootPath(boolean isBottom){
@@ -77,14 +77,22 @@ public class Paths {
         }
         return line(topCollect1Pose, topCollect2Pose).linear(topCollect1Pose, topCollect2Pose);
     }
-
+    public Path collectShootTransPath(boolean isBottom){
+        if (isBottom) {
+            return line(bottomCollect2Pose, bottomCollectToTopLaunchTransition).linear(bottomCollect2Pose, bottomCollectToTopLaunchTransition);
+        }
+        return line(topCollect2Pose, topCollectToBottomLaunchTransition).linear(topCollect2Pose, topCollectToBottomLaunchTransition);
+    }
     public Path collectShootPath(boolean isBottom){
         if (isBottom) {
-            return line(bottomCollect2Pose, topLaunchPose).linear(bottomCollect2Pose, topLaunchPose);
+            return line(bottomCollectToTopLaunchTransition, topLaunchPose).linear(bottomCollectToTopLaunchTransition, topLaunchPose);
         }
-        return line(topCollect2Pose, bottomLaunchPose).linear(topCollect2Pose, bottomLaunchPose);
+        return line(topCollectToBottomLaunchTransition, bottomLaunchPose).linear(topCollectToBottomLaunchTransition, bottomLaunchPose);
     }
 
+    public Path bottomShootLoadingTransPath() {
+        return line(bottomLaunchPose, bottomLaunchToEndPoseTransition).linear(bottomLaunchPose, bottomLaunchToEndPoseTransition);
+    }
     public Path shootLoadingPath(boolean isBottom){
         if (isBottom) {
             return line(bottomLaunchPose, endPose).linear(bottomLaunchPose, endPose);

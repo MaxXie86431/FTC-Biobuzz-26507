@@ -4,6 +4,7 @@ import static com.pedropathing.ivy.Scheduler.schedule;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Scheduler;
+import com.pedropathing.math.Pose;
 
 import org.firstinspires.ftc.teamcode.auto.pathing.Paths;
 import org.firstinspires.ftc.teamcode.auto.routines.Routines;
@@ -44,6 +45,10 @@ public class RedAuto extends NextOpMode {
     public void periodic() {
         follower.update();
         PoseTracker.saveAutoEndPose(follower.pose());   // TeleOp picks up where auto ended
+
+        Pose pose = follower.pose();
+        telemetry.addData("Pose", "x: %.1f, y: %.1f, h: %.1f°", pose.x(), pose.y(), Math.toDegrees(pose.heading()));
+        telemetry.update();
     }
 
     @Override
