@@ -3,10 +3,11 @@ package org.firstinspires.ftc.teamcode.utils;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
 
+import org.firstinspires.ftc.teamcode.auto.pathing.poses.HiveUpPoses;
+
 public class PoseTracker {
 
     private final Follower follower;
-
     public PoseTracker(Follower follower) {
         this.follower = follower;
     }
