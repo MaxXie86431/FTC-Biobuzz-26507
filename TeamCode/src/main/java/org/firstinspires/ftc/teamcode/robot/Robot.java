@@ -6,7 +6,7 @@ import java.util.function.DoubleSupplier;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Command;
-import static com.pedropathing.ivy.commands.Commands.instant;
+
 import static com.pedropathing.ivy.commands.Commands.lazy;
 import static com.pedropathing.ivy.commands.Commands.waitMs;
 import static com.pedropathing.ivy.groups.Groups.loop;
@@ -22,7 +22,6 @@ import org.firstinspires.ftc.teamcode.mechanisms.Flywheel;
 import org.firstinspires.ftc.teamcode.mechanisms.Intake;
 import org.firstinspires.ftc.teamcode.mechanisms.Intermediate;
 import org.firstinspires.ftc.teamcode.mechanisms.Blocker;
-import org.firstinspires.ftc.teamcode.auto.pathing.Poses;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 
 public class Robot implements NextRobot {
