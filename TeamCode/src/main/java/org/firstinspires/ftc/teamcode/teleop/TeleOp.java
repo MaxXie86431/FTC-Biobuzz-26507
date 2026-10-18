@@ -28,7 +28,8 @@ public class TeleOp extends NextOpMode{
     private final PoseTracker poseTracker;
     private Follower follower;
     private boolean initialized;
-    public static int padding = 16;
+    public static int launcherRPM = 130;
+
     public TeleOp(Robot robot) {
         super(robot);
         this.robot = robot;
@@ -71,7 +72,7 @@ public class TeleOp extends NextOpMode{
         gp1.leftBumper().onFalse(robot.stopIntake());
 
         // Flywheel
-        gp1.rightTrigger().isOver(0.2).onTrue(robot.setRPM(() -> robot.getFlywheel().calculateRPM(poseTracker.distanceToGoal(Alliance.RED))+padding));
+        gp1.rightTrigger().isOver(0.2).onTrue(robot.setRPM(() -> launcherRPM));
         gp1.rightTrigger().isOver(0.2).onFalse(robot.stop());
         gp1.rightBumper().onTrue(parallel(
                 robot.getBlocker().move(),
@@ -82,8 +83,8 @@ public class TeleOp extends NextOpMode{
         gp1.cross().onTrue(robot.shoot());
         gp1.cross().onFalse(robot.stop());
 
-        gp1.dpadUp().onTrue(instant(() -> padding += 5));
-        gp1.dpadDown().onTrue(instant(() -> padding -= 5));
+        gp1.circle().onTrue(robot.getFlywheel().moveServoUp());
+        gp1.square().onTrue(robot.getFlywheel().moveServoDown());
 
         gp1.dpadLeft().onTrue(robot.getFlywheel().increasePower());
         gp1.dpadRight().onTrue(robot.getFlywheel().decreasePower());
@@ -93,6 +94,7 @@ public class TeleOp extends NextOpMode{
     public void periodic() {
         poseTracker.update();
         telemetry.addData("Launcher Motor Power", robot.getFlywheel().getPower());
+        telemetry.addData("Servo Launcher Angle", robot.getFlywheel().getServoAngle());
         telemetry.addData("Flywheel RPM", robot.getFlywheel().flywheel.getEncoderVelocity().into(RotationsPerMinute));
         telemetry.addData("Pose", "x: %.1f, y: %.1f, h: %.1f°", poseTracker.getX(), poseTracker.getY(), Math.toDegrees(poseTracker.getHeading()));
         double distance = poseTracker.distanceToGoal(Alliance.RED);
