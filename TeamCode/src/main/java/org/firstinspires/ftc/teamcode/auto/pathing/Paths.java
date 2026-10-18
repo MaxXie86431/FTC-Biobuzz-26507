@@ -24,7 +24,7 @@ public class Paths {
 
     public Paths(Alliance alliance){
         if (alliance == Alliance.BLUE) {
-            allianceFactory = Poses.factory.mirrorX(72).mirrorY(72);
+            allianceFactory = Poses.factory.mirrorX(70.75).mirrorY(70.75);
         }
         else {
             allianceFactory = Poses.factory;
@@ -100,7 +100,4 @@ public class Paths {
         return line(topLaunchPose, endPose).linear(topLaunchPose, endPose);
     }
 
-    public Pose getStartPose() {
-        return startPose;
-    }
 }

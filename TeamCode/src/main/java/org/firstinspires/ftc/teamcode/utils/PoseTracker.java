@@ -3,28 +3,12 @@ package org.firstinspires.ftc.teamcode.utils;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
 
-import org.firstinspires.ftc.teamcode.auto.pathing.Poses;
-
 public class PoseTracker {
 
     private final Follower follower;
 
-    private final Pose startPose = Poses.startPose;   // same start as auto: (55, 8)
-    // where auto left the robot; TeleOp starts from here if auto just ran
-    private static Pose autoEndPose = null;
-
     public PoseTracker(Follower follower) {
         this.follower = follower;
-        if (autoEndPose != null) {
-            follower.setPose(autoEndPose);
-            autoEndPose = null;   // only use it once, so a later practice run starts at startPose
-        } else {
-            follower.setPose(startPose);
-        }
-    }
-
-    public static void saveAutoEndPose(Pose pose) {
-        autoEndPose = pose;
     }
 
     public void update() {

@@ -18,13 +18,13 @@ public class Drivetrain implements Mechanism{
     public NextMotor frontRight = new NextMotor(RobotController.expansionHub(), 0);
     public NextMotor backLeft = new NextMotor(RobotController.controlHub(), 0);
     public NextMotor backRight =  new NextMotor(RobotController.expansionHub(), 2);
-    public void drive(Gamepad gamepad1) {
-        DriveCommands.mecanumDrive(
+    public Command drive(Gamepad gamepad1) {
+        return DriveCommands.mecanumDrive(
             frontLeft,
             frontRight,
             backLeft,
             backRight,
             gamepad1
-        ).schedule();
+        );
     }
 }

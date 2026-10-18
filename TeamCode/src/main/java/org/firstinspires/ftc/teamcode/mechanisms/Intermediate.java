@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.mechanisms;
 
 import com.bylazar.configurables.annotations.Configurable;
+import com.pedropathing.ivy.Command;
 
 import dev.nextftc.hardware.RobotController;
 import dev.nextftc.hardware.actuators.NextMotor;
@@ -13,20 +14,15 @@ public class Intermediate implements Mechanism {
 
     public static double intermediateValue = 1.0;
 
-    // Commands calling these methods must require the shared Intermediate mechanism.
-    public void forward() {
-        setThrottle(-intermediateValue);
+    public Command forward() {
+        return instant(() -> intermediateMotor.setThrottle(-intermediateValue));
     }
 
-    public void reverse() {
-        setThrottle(intermediateValue);
+    public Command reverse() {
+        return instant(() -> intermediateMotor.setThrottle(intermediateValue));
     }
 
-    private void setThrottle(double throttle) {
-        intermediateMotor.setThrottle(throttle);
-    }
-
-    public void stop() {
-        setThrottle(0.0);
+    public Command stop() {
+        return instant(() -> intermediateMotor.setThrottle(0.0));
     }
 }

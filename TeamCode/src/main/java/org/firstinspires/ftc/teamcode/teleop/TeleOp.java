@@ -1,9 +1,8 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
 import static com.pedropathing.ivy.commands.Commands.instant;
-import static com.pedropathing.ivy.commands.Commands.waitMs;
+import static com.pedropathing.ivy.groups.Groups.loop;
 import static com.pedropathing.ivy.groups.Groups.parallel;
-import static com.pedropathing.ivy.groups.Groups.sequential;
 import static dev.nextftc.units.Units.RotationsPerMinute;
 
 import dev.nextftc.hardware.actuators.NextMotor;
@@ -12,26 +11,44 @@ import dev.nextftc.robot.opmode.NextTeleop;
 import dev.nextftc.robot.triggers.CommandGamepad;
 import dev.nextftc.robot.triggers.Trigger;
 
+import com.bylazar.configurables.annotations.Configurable;
+import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Scheduler;
-import com.pedropathing.ivy.commands.Commands;
+import com.pedropathing.math.Pose;
 
+import org.firstinspires.ftc.teamcode.auto.pathing.Poses;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.utils.Alliance;
 import org.firstinspires.ftc.teamcode.utils.PoseTracker;
 
+@Configurable
 @NextTeleop(name = "TeleOp")
 public class TeleOp extends NextOpMode{
     private final Robot robot;
     private final PoseTracker poseTracker;
+    private Follower follower;
+    private boolean initialized;
+    public static int padding = 16;
     public TeleOp(Robot robot) {
         super(robot);
         this.robot = robot;
 
         robot.createFollower();
-        poseTracker = new PoseTracker(robot.getFollower());
+        follower = robot.getFollower();
+        follower.setPose(new Pose(56, 8, Math.toRadians(90)));
+        poseTracker = new PoseTracker(follower);
+
 
         Scheduler.reset();
-        this.robot.init().schedule();
+    }
+
+    @Override
+    public void disabledPeriodic() {
+        if (!initialized) {
+            robot.init().schedule();
+            Scheduler.execute();
+            initialized = true;
+        }
     }
 
     @Override
@@ -45,47 +62,31 @@ public class TeleOp extends NextOpMode{
         robot.getDrivetrain().frontRight.setZeroPowerBehavior(NextMotor.ZeroPowerBehavior.BRAKE);
         robot.getDrivetrain().backLeft.setZeroPowerBehavior(NextMotor.ZeroPowerBehavior.BRAKE);
         robot.getDrivetrain().backRight.setZeroPowerBehavior(NextMotor.ZeroPowerBehavior.BRAKE);
-        robot.getDrivetrain().drive(gamepad1);
+        robot.getDrivetrain().drive(gamepad1).schedule();
 
         // Intake
-        gp1.leftTrigger().isOver(0.2).onTrue(robot.getIntake().intake());
-        gp1.leftTrigger().isOver(0.2).onFalse(robot.getIntake().stop());
-        gp1.leftBumper().onTrue(robot.getIntake().outtake());
-        gp1.leftBumper().onFalse(robot.getIntake().stop());
+        gp1.leftTrigger().isOver(0.2).onTrue(robot.intake());
+        gp1.leftTrigger().isOver(0.2).onFalse(robot.stopIntake());
+        gp1.leftBumper().onTrue(robot.outtake());
+        gp1.leftBumper().onFalse(robot.stopIntake());
 
         // Flywheel
-        gp1.rightTrigger().isOver(0.2).onTrue(
-                parallel(
-                        robot.getFlywheel().rollout(),
-                        sequential(
-                                waitMs(3000),
-                                robot.getServo().move()
-                        )
-                )
-        );
-        gp1.rightTrigger().isOver(0.2).onFalse(
-                parallel(
-                        robot.getFlywheel().stop(),
-                        robot.getServo().reset()
-                )
-        );
-        gp1.rightBumper().onTrue(
-                instant(() -> sequential(
-                        robot.getServo().move(),
-                        robot.getFlywheel().rollIn()
-                ).schedule())
-        );
-        gp1.rightBumper().onFalse(
-                sequential(
-                        robot.getFlywheel().stop(),
-                        robot.getServo().reset()
-                )
-        );
-        gp1.cross().onTrue(robot.getFlywheel().setRPM(() -> robot.getFlywheel().calculateRPM(poseTracker.distanceToGoal(Alliance.RED))));
-        gp1.cross().onFalse(robot.getFlywheel().stop());
-        
-        gp1.dpadUp().onTrue(robot.getFlywheel().increasePower());
-        gp1.dpadDown().onTrue(robot.getFlywheel().decreasePower());
+        gp1.rightTrigger().isOver(0.2).onTrue(robot.setRPM(() -> robot.getFlywheel().calculateRPM(poseTracker.distanceToGoal(Alliance.RED))+padding));
+        gp1.rightTrigger().isOver(0.2).onFalse(robot.stop());
+        gp1.rightBumper().onTrue(parallel(
+                robot.getBlocker().move(),
+                robot.getFlywheel().rollIn(),
+                loop(robot.getIntermediate().reverse())
+        ));
+        gp1.rightBumper().onFalse(robot.stop());
+        gp1.cross().onTrue(robot.shoot());
+        gp1.cross().onFalse(robot.stop());
+
+        gp1.dpadUp().onTrue(instant(() -> padding += 5));
+        gp1.dpadDown().onTrue(instant(() -> padding -= 5));
+
+        gp1.dpadLeft().onTrue(robot.getFlywheel().increasePower());
+        gp1.dpadRight().onTrue(robot.getFlywheel().decreasePower());
     }
 
     @Override
@@ -95,7 +96,7 @@ public class TeleOp extends NextOpMode{
         telemetry.addData("Flywheel RPM", robot.getFlywheel().flywheel.getEncoderVelocity().into(RotationsPerMinute));
         telemetry.addData("Pose", "x: %.1f, y: %.1f, h: %.1f°", poseTracker.getX(), poseTracker.getY(), Math.toDegrees(poseTracker.getHeading()));
         double distance = poseTracker.distanceToGoal(Alliance.RED);
-        telemetry.addData("Distance to Goal", "%.1f in%s", distance, robot.getFlywheel().inShootingRange(distance) ? "" : " (OUT OF RANGE)");
+        telemetry.addData("Distance from Goal: ", distance);
         telemetry.addData("Target RPM", "%.1f", robot.getFlywheel().calculateRPM(distance));
         telemetry.update();
     }

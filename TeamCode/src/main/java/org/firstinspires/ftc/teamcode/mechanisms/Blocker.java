@@ -9,7 +9,7 @@ import dev.nextftc.hardware.actuators.NextServo;
 import dev.nextftc.robot.Mechanism;
 
 @Configurable
-public class Servo implements Mechanism {
+public class Blocker implements Mechanism {
     public static double servoPosition = 0.5;
     public static double servoReset = 0;
     NextServo servo = new NextServo(RobotController.expansionHub(), 1, 0.01, NextMotor.Direction.REVERSE);
@@ -19,9 +19,10 @@ public class Servo implements Mechanism {
         });
     }
 
-    public Command reset(){
+    public Command close() {
         return instant(() -> {
             servo.setPosition(servoReset);
+            servo.enable();
         });
     }
 }

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.auto.routines;
 
 import static com.pedropathing.ivy.commands.Commands.waitMs;
 import static com.pedropathing.ivy.groups.Groups.deadline;
+import static com.pedropathing.ivy.groups.Groups.repeat;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 
 import com.pedropathing.ivy.Command;
@@ -25,9 +26,9 @@ public class Routines {
         return sequential(
             deadline(
                 commands.runPath(paths.startPath()),
-                robot.getIntake().intake()
+                robot.intake()
             ),
-            robot.getIntake().stop()
+            robot.stopIntake()
         );
     }*/
 
@@ -35,7 +36,7 @@ public class Routines {
         if (isBottom) {
             return sequential(
                 commands.runPath(paths.startShootPath(isBottom)),
-                robot.getFlywheel().shoot(4, 1000),
+                robot.shoot(),
                 commands.runPath(paths.shootCollectPath(isBottom)),
                 robot.getIntake().intake(),
                 waitMs(100),
@@ -43,14 +44,14 @@ public class Routines {
                 robot.getIntake().stop(),
                 commands.runPath(paths.collectShootTransPath(isBottom)),
                 commands.runPath(paths.collectShootPath(isBottom)),
-                robot.getFlywheel().shoot(4, 1000),
+                robot.shoot(),
                 commands.runPath(paths.bottomShootLoadingTransPath()),
                 commands.runPath(paths.shootLoadingPath(isBottom))
             );
         } else {
             return sequential(
                 commands.runPath(paths.startShootPath(isBottom)),
-                robot.getFlywheel().shoot(4, 1000),
+                robot.shoot(),
                 commands.runPath(paths.shootCollectPath(isBottom)),
                 robot.getIntake().intake(),
                 waitMs(100),
@@ -58,9 +59,10 @@ public class Routines {
                 robot.getIntake().stop(),
                 commands.runPath(paths.collectShootTransPath(isBottom)),
                 commands.runPath(paths.collectShootPath(isBottom)),
-                robot.getFlywheel().shoot(4, 1000),
+                robot.shoot(),
                 commands.runPath(paths.shootLoadingPath(isBottom))
             );
         }
+
     }
 }
