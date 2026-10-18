@@ -82,8 +82,8 @@ public class TeleOp extends NextOpMode{
         gp1.cross().onTrue(robot.shoot());
         gp1.cross().onFalse(robot.stop());
 
-        gp1.circle().onTrue(robot.getFlywheel().moveServoUp());
-        gp1.square().onTrue(robot.getFlywheel().moveServoDown());
+        //gp1.circle().onTrue(robot.getHood().moveServoUp());
+        //gp1.square().onTrue(robot.getHood().moveServoDown());
 
         gp1.dpadLeft().onTrue(robot.getFlywheel().increasePower());
         gp1.dpadRight().onTrue(robot.getFlywheel().decreasePower());
@@ -93,7 +93,7 @@ public class TeleOp extends NextOpMode{
     public void periodic() {
         poseTracker.update();
         telemetry.addData("Launcher Motor Power", robot.getFlywheel().getPower());
-        telemetry.addData("Servo Launcher Angle", robot.getFlywheel().getServoAngle());
+        //telemetry.addData("Servo Launcher Angle", robot.getFlywheel().getServoAngle());
         telemetry.addData("Flywheel RPM", robot.getFlywheel().flywheel.getEncoderVelocity().into(RotationsPerMinute));
         telemetry.addData("Pose", "x: %.1f, y: %.1f, h: %.1f°", poseTracker.getX(), poseTracker.getY(), Math.toDegrees(poseTracker.getHeading()));
         double distance = poseTracker.distanceToGoal(Alliance.RED);
