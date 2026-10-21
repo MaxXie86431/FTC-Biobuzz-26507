@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import java.util.Set;
 import java.util.function.DoubleSupplier;
 
+import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Command;
 
@@ -24,6 +25,7 @@ import org.firstinspires.ftc.teamcode.mechanisms.Intermediate;
 import org.firstinspires.ftc.teamcode.mechanisms.Blocker;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 
+@Configurable
 public class Robot implements NextRobot {
     private  Follower follower;
 
@@ -32,12 +34,11 @@ public class Robot implements NextRobot {
     private final Intake intake = new Intake();
     private final Flywheel flywheel = new Flywheel();
     private final Blocker blocker = new Blocker();
+    public static int charge = 3000;
     public Robot() {}
 
     public void createFollower() {
-        if (follower == null) {
-            follower = Constants.create(RobotController.hardwareMap());
-        }
+        follower = Constants.create(RobotController.hardwareMap());
     }
     public Follower getFollower() {
         return follower;
@@ -61,35 +62,14 @@ public class Robot implements NextRobot {
 
     public Flywheel getFlywheel(){ return flywheel; }
 
-    public Command intake() {
-        return parallel(
-                intake.intake(),
-                intermediate.forward()
-        );
-    }
-
-    public Command outtake() {
-        return parallel(
-                intake.outtake(),
-                intermediate.reverse()
-        );
-    }
-
-    public Command stopIntake() {
-        return parallel(
-                intake.stop(),
-                intermediate.stop()
-        );
-    }
-
     public Command shoot() {
         return parallel(
                 flywheel.rollout(),
                 sequential(
-                        intermediate.stop(),
-                        waitMs(2000),
+                        parallel(intake.stop(), intermediate.stop()),
+                        waitMs(charge),
                         blocker.move(),
-                        loop(intermediate.forward())
+                        parallel(intake.intake(), intermediate.forward())
                 )
         );
     }
@@ -98,10 +78,10 @@ public class Robot implements NextRobot {
         return parallel(
                 loop(lazy(() -> flywheel.setVelocity(rpm.getAsDouble())).requiring(flywheel)),
                 sequential(
-                        intermediate.stop(),
-                        waitMs(3000),
+                        parallel(intake.stop(), intermediate.stop()),
+                        waitMs(charge),
                         blocker.move(),
-                        loop(intermediate.forward())
+                        parallel(intake.intake(), intermediate.forward())
                 )
         );
     }
@@ -109,6 +89,7 @@ public class Robot implements NextRobot {
     public Command stop() {
         return parallel(
                 flywheel.stop(),
+                intake.stop(),
                 intermediate.stop(),
                 blocker.close()
         );

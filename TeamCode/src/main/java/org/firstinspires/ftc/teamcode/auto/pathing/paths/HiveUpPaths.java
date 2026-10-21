@@ -18,7 +18,7 @@ public class HiveUpPaths {
 
     public HiveUpPaths(Alliance alliance){
         if (alliance == Alliance.BLUE) {
-            allianceFactory = HiveUpPoses.factory.mirrorX(72).mirrorY(72);
+            allianceFactory = HiveUpPoses.factory.mirrorX(70.75).mirrorY(70.75);
         }
         else {
             allianceFactory = HiveUpPoses.factory;

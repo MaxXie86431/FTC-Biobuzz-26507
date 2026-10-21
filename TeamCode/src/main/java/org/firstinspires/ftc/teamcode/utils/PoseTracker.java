@@ -3,17 +3,24 @@ package org.firstinspires.ftc.teamcode.utils;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
 
-import org.firstinspires.ftc.teamcode.auto.pathing.poses.HiveUpPoses;
-
 public class PoseTracker {
 
+    private static Pose lastPose = new Pose(0, 0, 0);
     private final Follower follower;
     public PoseTracker(Follower follower) {
         this.follower = follower;
     }
 
+    public static void saveLastPose(Pose pose) {
+        lastPose = pose;
+    }
+
+    // Keep the latest measured pose across Auto and TeleOp runs.
+    public static Pose getLastPose() {
+        return lastPose;
+    }
+
     public void update() {
-        // only update odometry; follower.update() would stop the drive motors when no path is running
         follower.localizer.update();
     }
 

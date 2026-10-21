@@ -63,7 +63,7 @@ public class Flywheel implements Mechanism {
     public double calculateRPM( double distance) {
         // outside the tested range, use the closest tested distance instead of guessing
         distance = Math.max(MIN_DISTANCE, Math.min(MAX_DISTANCE, distance));
-        return ( 0.761321 * distance + 107.87642);
+        return ( -47.02952 + 53.45873*Math.log(distance));
     }
 }
 

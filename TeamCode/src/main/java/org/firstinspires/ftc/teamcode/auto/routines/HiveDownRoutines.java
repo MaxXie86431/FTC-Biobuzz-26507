@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.auto.routines;
 
 import static com.pedropathing.ivy.commands.Commands.waitMs;
 
+import static com.pedropathing.ivy.groups.Groups.deadline;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 
 import com.pedropathing.ivy.Command;
@@ -71,7 +72,8 @@ public class HiveDownRoutines {
         return sequential(
             waitMs(15000),
             commands.runPath(paths.startPath()),
-            robot.shoot(),
+            deadline(waitMs(10000), robot.shoot()),
+            robot.stop(),
             commands.runPath(paths.endPath())
         );
     }
