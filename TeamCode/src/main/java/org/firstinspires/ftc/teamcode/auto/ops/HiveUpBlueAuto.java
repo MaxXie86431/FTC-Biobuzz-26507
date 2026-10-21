@@ -34,7 +34,7 @@ public class HiveUpBlueAuto extends NextOpMode {
         robot.createFollower();
         follower = robot.getFollower();
         paths = new HiveUpPaths(alliance);
-        routines = new HiveUpRoutines(robot, paths, new AutoCommands(follower));
+        routines = new HiveUpRoutines(robot, paths, new AutoCommands(follower), alliance);
     }
 
     @Override

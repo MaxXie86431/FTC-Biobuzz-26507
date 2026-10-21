@@ -33,7 +33,7 @@ public class HiveDownRedAuto extends NextOpMode {
         robot.createFollower();
         follower = robot.getFollower();
         paths = new HiveDownPaths(alliance);
-        routines = new HiveDownRoutines(robot, paths, new AutoCommands(follower));
+        routines = new HiveDownRoutines(robot, paths, new AutoCommands(follower), alliance);
     }
 
     @Override

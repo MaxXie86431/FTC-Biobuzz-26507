@@ -23,7 +23,7 @@ public class Hood implements Mechanism {
     NextServo launcherServo = new NextServo(RobotController.expansionHub(), 0, 0.01);
     private double power = 0.7;
 
-    public Flywheel() {
+    public Hood() {
         flywheel.getVelocityConstants()
                 .withP(0.1)
                 .withI(0.0)
