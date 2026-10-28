@@ -25,7 +25,8 @@ public abstract class TeleOp extends NextOpMode{
     private final PoseTracker poseTracker;
     private Follower follower;
     private boolean initialized;
-    public static int padding = 16;
+    public static int padding = 15;
+    public static int paddingStep = 5;
     protected TeleOp(Robot robot, Alliance alliance) {
         super(robot);
         this.robot = robot;
@@ -92,11 +93,12 @@ public abstract class TeleOp extends NextOpMode{
         gp1.cross().onTrue(robot.shoot());
         gp1.cross().onFalse(robot.stop());
 
-        //gp1.circle().onTrue(robot.getHood().moveServoUp());
-        //gp1.square().onTrue(robot.getHood().moveServoDown());
+        gp1.circle().onTrue(robot.getBlocker().toggle());
 
-        gp1.dpadLeft().onTrue(robot.getFlywheel().increasePower());
-        gp1.dpadRight().onTrue(robot.getFlywheel().decreasePower());
+        gp1.dpadUp().onTrue(instant(() -> padding += paddingStep));
+        gp1.dpadDown().onTrue(instant(() -> padding -= paddingStep));
+        gp1.dpadLeft().onTrue(robot.getFlywheel().decreasePower());
+        gp1.dpadRight().onTrue(robot.getFlywheel().increasePower());
     }
 
     @Override
@@ -109,7 +111,8 @@ public abstract class TeleOp extends NextOpMode{
         telemetry.addData("Pose", "x: %.1f, y: %.1f, h: %.1f°", poseTracker.getX(), poseTracker.getY(), Math.toDegrees(poseTracker.getHeading()));
         double distance = poseTracker.distanceToGoal(alliance);
         telemetry.addData("Distance from Goal: ", distance);
-        telemetry.addData("Target RPM", "%.1f", robot.getFlywheel().calculateRPM(distance));
+        telemetry.addData("RPM Padding", padding);
+        telemetry.addData("Target RPM", "%.1f", robot.getFlywheel().calculateRPM(distance) + padding);
         telemetry.update();
     }
 

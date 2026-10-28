@@ -39,8 +39,6 @@ public class HiveUpRedAuto extends NextOpMode {
 
     @Override
     public void start() {
-        follower.setPose(paths.getStartPose());
-        PoseTracker.saveLastPose(follower.pose());
         schedule(routines.autoPathSimplified());
     }
 
@@ -58,6 +56,8 @@ public class HiveUpRedAuto extends NextOpMode {
     @Override
     public void disabledPeriodic() {
         if (!initialized) {
+            follower.setPose(paths.getStartPose());
+            PoseTracker.saveLastPose(follower.pose());
             robot.init().schedule();
             Scheduler.execute();
             initialized = true;

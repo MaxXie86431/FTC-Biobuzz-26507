@@ -13,16 +13,23 @@ public class Blocker implements Mechanism {
     public static double servoPosition = 0.5;
     public static double servoReset = 0;
     NextServo servo = new NextServo(RobotController.expansionHub(), 1, 0.01, NextMotor.Direction.REVERSE);
+    private boolean open;
+
     public Command move() {
-        return instant(() -> {
-            servo.setPosition(servoPosition);
-        });
+        return instant(() -> setOpen(true));
     }
 
     public Command close() {
-        return instant(() -> {
-            servo.setPosition(servoReset);
-            servo.enable();
-        });
+        return instant(() -> setOpen(false));
+    }
+
+    public Command toggle() {
+        return instant(() -> setOpen(!open));
+    }
+
+    private void setOpen(boolean open) {
+        servo.setPosition(open ? servoPosition : servoReset);
+        servo.enable();
+        this.open = open;
     }
 }
