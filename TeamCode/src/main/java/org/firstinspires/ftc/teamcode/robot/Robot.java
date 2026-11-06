@@ -20,6 +20,7 @@ import dev.nextftc.robot.NextRobot;
 
 import org.firstinspires.ftc.teamcode.mechanisms.Drivetrain;
 import org.firstinspires.ftc.teamcode.mechanisms.Flywheel;
+import org.firstinspires.ftc.teamcode.mechanisms.Hood;
 import org.firstinspires.ftc.teamcode.mechanisms.Intake;
 import org.firstinspires.ftc.teamcode.mechanisms.Intermediate;
 import org.firstinspires.ftc.teamcode.mechanisms.Blocker;
@@ -34,6 +35,7 @@ public class Robot implements NextRobot {
     private final Intake intake = new Intake();
     private final Flywheel flywheel = new Flywheel();
     private final Blocker blocker = new Blocker();
+    private final Hood hood = new Hood();
     public static int charge = 3000;
     public Robot() {}
 
@@ -61,6 +63,8 @@ public class Robot implements NextRobot {
     }
 
     public Flywheel getFlywheel(){ return flywheel; }
+
+    public Hood getHood(){ return hood; }
 
     public Command shoot() {
         return parallel(

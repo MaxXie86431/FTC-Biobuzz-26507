@@ -49,6 +49,10 @@ public abstract class TeleOp extends NextOpMode{
         }
     }
 
+    // ####### Triangle(Y) #######
+    // Square(X) ###### Circle(B)
+    // #######  Cross(A)  #######
+
     @Override
     public void start() {
         follower.setPose(PoseTracker.getLastPose());
@@ -95,6 +99,10 @@ public abstract class TeleOp extends NextOpMode{
 
         gp1.circle().onTrue(robot.getBlocker().toggle());
 
+        // Hood
+        gp1.triangle().onTrue(robot.getHood().moveServoDown());
+        gp1.square().onTrue(robot.getHood().moveServoUp());
+
         gp1.dpadUp().onTrue(instant(() -> padding += paddingStep));
         gp1.dpadDown().onTrue(instant(() -> padding -= paddingStep));
         gp1.dpadLeft().onTrue(robot.getFlywheel().decreasePower());
@@ -110,9 +118,10 @@ public abstract class TeleOp extends NextOpMode{
         telemetry.addData("Flywheel RPM", robot.getFlywheel().flywheel.getEncoderVelocity().into(RotationsPerMinute));
         telemetry.addData("Pose", "x: %.1f, y: %.1f, h: %.1f°", poseTracker.getX(), poseTracker.getY(), Math.toDegrees(poseTracker.getHeading()));
         double distance = poseTracker.distanceToGoal(alliance);
-        telemetry.addData("Distance from Goal: ", distance);
+        telemetry.addData("Distance from Goal", distance);
         telemetry.addData("RPM Padding", padding);
         telemetry.addData("Target RPM", "%.1f", robot.getFlywheel().calculateRPM(distance) + padding);
+        telemetry.addData("Servo Position", robot.getHood().getServoAngle());
         telemetry.update();
     }
 
