@@ -13,10 +13,14 @@ import static dev.nextftc.units.Units.RotationsPerMinute;
 public class Flywheel implements Mechanism {
     public final NextMotor flywheel =
             new NextMotor(RobotController.expansionHub(), 1, Degrees.of(360.0 / 28.0));
+    // second flywheel motor, mounted opposite the first so it spins the other way
+    public final NextMotor flywheel2 =
+            new NextMotor(RobotController.expansionHub(), 3, Degrees.of(360.0 / 28.0));
     private double power = 0.7;
 
     public Flywheel() {
-        flywheel.setDirection(NextMotor.Direction.REVERSE);flywheel.setDirection(NextMotor.Direction.REVERSE);
+        flywheel.setDirection(NextMotor.Direction.REVERSE);
+        flywheel2.setDirection(NextMotor.Direction.FORWARD);
         flywheel.getVelocityConstants()
             .withP(0.1)
             .withI(0.0)
@@ -27,8 +31,14 @@ public class Flywheel implements Mechanism {
         return power;
     }
     public Command rollout() {
-        return infinite(() -> flywheel.setThrottle(power))
-                .setEnd(condition -> flywheel.setThrottle(0.0));
+        return infinite(() -> {
+                    flywheel.setThrottle(power);
+                    flywheel2.setThrottle(power);
+                })
+                .setEnd(condition -> {
+                    flywheel.setThrottle(0.0);
+                    flywheel2.setThrottle(0.0);
+                });
     }
 
     public Command increasePower() {
@@ -49,7 +59,10 @@ public class Flywheel implements Mechanism {
     }
 
     public Command setThrottle(double throttle) {
-        return instant(() -> flywheel.setThrottle(throttle));
+        return instant(() -> {
+            flywheel.setThrottle(throttle);
+            flywheel2.setThrottle(throttle);
+        });
     }
 
     public Command setVelocity(double rpm) {
