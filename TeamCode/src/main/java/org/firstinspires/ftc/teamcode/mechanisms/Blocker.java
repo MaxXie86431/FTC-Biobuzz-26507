@@ -10,8 +10,8 @@ import dev.nextftc.robot.Mechanism;
 
 @Configurable
 public class Blocker implements Mechanism {
-    public static double servoPosition = 0.5;
-    public static double servoReset = 0;
+    public static double servoPosition = 0.75;
+    public static double servoReset = 0.55;
     NextServo servo = new NextServo(RobotController.expansionHub(), 1, 0.01, NextMotor.Direction.REVERSE);
     private boolean open;
 

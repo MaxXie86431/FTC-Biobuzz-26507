@@ -12,10 +12,11 @@ import static dev.nextftc.units.Units.RotationsPerMinute;
 @Configurable
 public class Flywheel implements Mechanism {
     public final NextMotor flywheel =
-            new NextMotor(RobotController.expansionHub(), 1, Degrees.of(360.0 / 560));
+            new NextMotor(RobotController.expansionHub(), 1, Degrees.of(360.0 / 28.0));
     private double power = 0.7;
 
     public Flywheel() {
+        flywheel.setDirection(NextMotor.Direction.REVERSE);flywheel.setDirection(NextMotor.Direction.REVERSE);
         flywheel.getVelocityConstants()
             .withP(0.1)
             .withI(0.0)

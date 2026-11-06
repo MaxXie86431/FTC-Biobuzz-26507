@@ -15,11 +15,11 @@ public class Intermediate implements Mechanism {
     public static double intermediateValue = 1.0;
 
     public Command forward() {
-        return instant(() -> intermediateMotor.setThrottle(-intermediateValue));
+        return instant(() -> intermediateMotor.setThrottle(intermediateValue));
     }
 
     public Command reverse() {
-        return instant(() -> intermediateMotor.setThrottle(intermediateValue));
+        return instant(() -> intermediateMotor.setThrottle(-intermediateValue));
     }
 
     public Command stop() {

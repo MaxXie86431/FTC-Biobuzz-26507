@@ -16,7 +16,7 @@ import static dev.nextftc.units.Units.RotationsPerMinute;
 @Configurable
 public class Hood implements Mechanism {
     public final NextMotor flywheel =
-            new NextMotor(RobotController.expansionHub(), 1, Degrees.of(360.0 / 560));
+            new NextMotor(RobotController.expansionHub(), 1, Degrees.of(360.0 / 28.0));
 
     public static double servoLaunchPosition = 0.5;
     public static double servoStep = 0.05;

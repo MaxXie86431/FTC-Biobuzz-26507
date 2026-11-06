@@ -15,13 +15,13 @@ public class Intake implements Mechanism {
 
     public Command intake() {
         return instant(() -> {
-            intakeMotor.setThrottle(-intakeValue);
+            intakeMotor.setThrottle(intakeValue);
         });
     }
 
     public Command outtake() {
         return instant(() -> {
-            intakeMotor.setThrottle(intakeValue);
+            intakeMotor.setThrottle(-intakeValue);
         });
     }
 
