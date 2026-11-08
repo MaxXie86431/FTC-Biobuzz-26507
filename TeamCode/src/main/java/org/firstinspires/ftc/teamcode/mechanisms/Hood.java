@@ -33,6 +33,14 @@ public class Hood implements Mechanism {
         });
     }
 
+    // jump straight to a servo position (clamped to 0-1), e.g. from a shooter model
+    public Command setPosition(double position) {
+        return instant(() -> {
+            servoLaunchPosition = Math.max(0.0, Math.min(1.0, position));
+            launcherServo.setPosition(servoLaunchPosition);
+        });
+    }
+
     public Command moveServoDown() {
         return instant(() -> {
             servoLaunchPosition = Math.max(0.0, servoLaunchPosition - 0.05);
