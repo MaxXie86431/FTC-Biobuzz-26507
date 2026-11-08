@@ -6,6 +6,8 @@ import com.pedropathing.ivy.Command;
 import dev.nextftc.robot.Mechanism;
 import dev.nextftc.hardware.actuators.NextMotor;
 import dev.nextftc.hardware.RobotController;
+import dev.nextftc.units.measuretypes.Angle;
+
 import static dev.nextftc.units.Units.Degrees;
 import static dev.nextftc.units.Units.RotationsPerMinute;
 
@@ -40,7 +42,6 @@ public class Flywheel implements Mechanism {
                     flywheel2.setThrottle(0.0);
                 });
     }
-
     public Command increasePower() {
         return instant(() -> power = Math.min(1.0, power + 0.01));
     }
