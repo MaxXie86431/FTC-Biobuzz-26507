@@ -31,7 +31,7 @@ public class HiveUpRoutines {
 
     // same target RPM as TeleOp: regression from distance to goal, plus TeleOp's padding
     private Command shoot() {
-        return robot.setRPM(() -> robot.getFlywheel().calculateRPM(poseTracker.distanceToGoal(alliance)) + TeleOp.padding);
+        return robot.setRPM(() -> 2700);
     }
 
     public Command autoPathSimplified() {
