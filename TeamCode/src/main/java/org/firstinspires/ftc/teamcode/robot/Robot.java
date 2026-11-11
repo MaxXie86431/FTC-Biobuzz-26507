@@ -38,7 +38,7 @@ public class Robot implements NextRobot {
     private final Hood hood = new Hood();
     public static int charge = 2000;
     public static double servoWait = 100;
-    public static double reverseTime = 300;
+    public static double reverseTime = 200;
     public Robot() {}
 
     public void createFollower() {
@@ -68,35 +68,32 @@ public class Robot implements NextRobot {
 
     public Hood getHood(){ return hood; }
 
-    public Command shoot() {
-        return parallel(
-                flywheel.rollout(),
-                sequential(
-                        parallel(
-                                waitMs(charge),
-                                sequential(
-                                        intermediate.reverse(),
-                                        waitMs(reverseTime),
-                                        intermediate.stop()
-                                )
-                        ),
-                        blocker.move(),
-                        waitMs(servoWait),
-                        parallel(intake.intake(), intermediate.forward())
-                )
+    // spin-up wait while the intermediate backs the balls away, then open the blocker and feed
+    private Command feed() {
+        return sequential(
+                parallel(
+                        waitMs(charge),
+                        sequential(
+                                intermediate.reverse(),
+                                waitMs(reverseTime),
+                                intermediate.stop()
+                        )
+                ),
+                blocker.move(),
+                waitMs(servoWait),
+                parallel(intake.intake(), intermediate.forward())
         );
     }
 
-    public Command setRPM(DoubleSupplier rpm) {
+    public Command shoot() {
+        return parallel(flywheel.rollout(), feed());
+    }
+
+    // same feed sequence as shoot(), but holds the flywheel at an RPM instead of a fixed power
+    public Command shootAtRPM(DoubleSupplier rpm) {
         return parallel(
                 loop(lazy(() -> flywheel.setVelocity(rpm.getAsDouble())).requiring(flywheel)),
-                sequential(
-                        parallel(intake.stop(), intermediate.stop()),
-                        waitMs(charge),
-                        blocker.move(),
-                        waitMs(servoWait),
-                        parallel(intake.intake(), intermediate.forward())
-                )
+                feed()
         );
     }
 

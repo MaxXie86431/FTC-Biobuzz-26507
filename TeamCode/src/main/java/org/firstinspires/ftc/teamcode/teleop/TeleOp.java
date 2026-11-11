@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
 import static com.pedropathing.ivy.commands.Commands.instant;
+import static com.pedropathing.ivy.commands.Commands.lazy;
 import static com.pedropathing.ivy.groups.Groups.loop;
 import static com.pedropathing.ivy.groups.Groups.parallel;
 import static dev.nextftc.units.Units.RotationsPerMinute;
@@ -14,6 +15,7 @@ import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Scheduler;
 
+import org.firstinspires.ftc.teamcode.lut_interpolation.ShooterLUT;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.utils.Alliance;
 import org.firstinspires.ftc.teamcode.utils.PoseTracker;
@@ -25,7 +27,8 @@ public abstract class TeleOp extends NextOpMode{
     private final PoseTracker poseTracker;
     private Follower follower;
     private boolean initialized;
-    public static int padding = 15;
+    // driver trim added on top of the LUT RPM (dpad up/down)
+    public static int padding = 0;
     public static int paddingStep = 5;
     protected TeleOp(Robot robot, Alliance alliance) {
         super(robot);
@@ -86,7 +89,11 @@ public abstract class TeleOp extends NextOpMode{
         ));
 
         // Flywheel
-        gp1.rightTrigger().isOver(0.2).onTrue(robot.setRPM(() -> robot.getFlywheel().calculateRPM(poseTracker.distanceToGoal(alliance))+padding));
+        // LUT shot: RPM and hood follow the distance to the closest goal every loop
+        gp1.rightTrigger().isOver(0.2).onTrue(parallel(
+                robot.shootAtRPM(() -> lutShot().rpm + padding),
+                loop(lazy(() -> robot.getHood().setPosition(lutShot().angle)))
+        ));
         gp1.rightTrigger().isOver(0.2).onFalse(robot.stop());
         gp1.rightBumper().onTrue(parallel(
                 robot.getBlocker().move(),
@@ -109,6 +116,10 @@ public abstract class TeleOp extends NextOpMode{
         gp1.dpadRight().onTrue(robot.getFlywheel().increasePower());
     }
 
+    private ShooterLUT.ShotSettings lutShot() {
+        return ShooterLUT.calculate(poseTracker.distanceToGoal(alliance));
+    }
+
     @Override
     public void periodic() {
         poseTracker.update();
@@ -118,9 +129,10 @@ public abstract class TeleOp extends NextOpMode{
         telemetry.addData("Flywheel RPM", robot.getFlywheel().flywheel.getEncoderVelocity().into(RotationsPerMinute));
         telemetry.addData("Pose", "x: %.1f, y: %.1f, h: %.1f°", poseTracker.getX(), poseTracker.getY(), Math.toDegrees(poseTracker.getHeading()));
         double distance = poseTracker.distanceToGoal(alliance);
-        telemetry.addData("Distance from Goal", distance);
+        ShooterLUT.ShotSettings shot = ShooterLUT.calculate(distance);
+        telemetry.addData("Distance from Goal", "%.1f in", distance);
         telemetry.addData("RPM Padding", padding);
-        telemetry.addData("Target RPM", "%.1f", robot.getFlywheel().calculateRPM(distance) + padding);
+        telemetry.addData("LUT Target", "hood %.2f, %.0f RPM", shot.angle, shot.rpm + padding);
         telemetry.addData("Servo Position", robot.getHood().getServoAngle());
         telemetry.update();
     }

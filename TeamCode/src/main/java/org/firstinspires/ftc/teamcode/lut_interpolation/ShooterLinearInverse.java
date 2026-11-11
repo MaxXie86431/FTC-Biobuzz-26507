@@ -1,17 +1,23 @@
 package org.firstinspires.ftc.teamcode.lut_interpolation;
 public final class ShooterLinearInverse {
 
-    private static final double[] DISTANCES = {};
-    private static final double[] ANGLES = {};
-    private static final double[] RPMS = {};
+    // From shooter_data.csv: every made shot after the two-motor fix. Angle = hood servo position.
+    private static final double[] DISTANCES = {14.57, 14.59, 19.80, 19.82, 22.28, 22.30, 22.33, 24.70, 26.53,
+            26.54, 26.57, 28.62, 36.64, 38.58, 42.29, 42.29, 42.32, 49.26, 49.27};
+    private static final double[] ANGLES = {0.06, 0.00, 0.16, 0.16, 0.14, 0.12, 0.12, 0.24, 0.12,
+            0.16, 0.22, 0.32, 0.54, 0.28, 0.38, 0.38, 0.38, 0.18, 0.56};
+    private static final double[] RPMS = {3100, 3160, 2550, 2500, 2590, 2630, 2680, 3030, 2680,
+            2720, 2590, 3150, 3110, 2740, 3010, 3010, 3010, 3430, 3010};
 
-    private static final double MIN_ANGLE = Double.NaN;
-    private static final double MAX_ANGLE = Double.NaN;
-    private static final double MIN_RPM = Double.NaN;
-    private static final double MAX_RPM = Double.NaN;
+    // limits = the range our data covers, so the model never asks for settings we haven't tested
+    private static final double MIN_ANGLE = 0.0;
+    private static final double MAX_ANGLE = 0.56;
+    private static final double MIN_RPM = 2500;
+    private static final double MAX_RPM = 3430;
 
-    private static final double PREFERRED_ANGLE = Double.NaN;
-    private static final double ANGLE_STEP = 0.5;
+    private static final double PREFERRED_ANGLE = 0.3;
+    // hood angle is a servo position (0-1), so step in hundredths
+    private static final double ANGLE_STEP = 0.01;
 
     private final double wAngle;
     private final double wRpm;

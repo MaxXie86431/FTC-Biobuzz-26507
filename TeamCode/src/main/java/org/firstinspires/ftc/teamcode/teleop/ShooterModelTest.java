@@ -111,7 +111,7 @@ public class ShooterModelTest extends NextOpMode {
 
         // Shoot with the selected model; RPM and hood follow the model every loop
         gp1.rightTrigger().isOver(0.2).onTrue(parallel(
-                robot.setRPM(this::targetRpm),
+                robot.shootAtRPM(this::targetRpm),   // same shot sequence as Data Collection
                 loop(lazy(() -> robot.getHood().setPosition(targetAngle())))
         ));
         gp1.rightTrigger().isOver(0.2).onFalse(robot.stop());

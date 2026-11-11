@@ -66,19 +66,12 @@ public class Flywheel implements Mechanism {
         });
     }
 
+    // motor 1 runs the velocity PID; motor 2 copies its power so both motors drive the flywheel
     public Command setVelocity(double rpm) {
-        return instant(() -> flywheel.setVelocitySetpoint(RotationsPerMinute.of(rpm)));
-    }
-
-    // distances (inches) our shooting data covers
-    public static final double MIN_DISTANCE = 21.5;
-    public static final double MAX_DISTANCE = 44;
-
-
-    public double calculateRPM( double distance) {
-        // outside the tested range, use the closest tested distance instead of guessing
-        distance = Math.max(MIN_DISTANCE, Math.min(MAX_DISTANCE, distance));
-        return ( -47.02952 + 53.45873*Math.log(distance));
+        return instant(() -> {
+            flywheel.setVelocitySetpoint(RotationsPerMinute.of(rpm));
+            flywheel2.follow(flywheel);
+        });
     }
 }
 

@@ -1,9 +1,13 @@
 package org.firstinspires.ftc.teamcode.lut_interpolation;
 public class ShooterLUT {
 
-    private static final double[] DISTANCES = {};
-    private static final double[] ANGLES = {};
-    private static final double[] RPMS = {};
+    // From shooter_data.csv (made shots after the two-motor fix). Angle = hood servo position.
+    // Each distance averages the made shots taken there. Left out: 24.7 in (0.24 @ 3030) and
+    // 36.6 in (0.54 @ 3110), which disagree with the better-supported neighbours on either side,
+    // and the low-hood alternative at 49.3 in (0.18 @ 3430).
+    private static final double[] DISTANCES = {14.58, 19.81, 22.30, 26.55, 28.62, 38.58, 42.30, 49.27};
+    private static final double[] ANGLES = {0.03, 0.16, 0.13, 0.17, 0.32, 0.28, 0.38, 0.56};
+    private static final double[] RPMS = {3130, 2525, 2633, 2663, 3150, 2740, 3010, 3010};
 
     public static class ShotSettings {
         public final double angle;

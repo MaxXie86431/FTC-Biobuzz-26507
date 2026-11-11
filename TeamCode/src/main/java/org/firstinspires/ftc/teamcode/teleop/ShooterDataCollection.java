@@ -42,22 +42,21 @@ import dev.nextftc.robot.triggers.Trigger;
 // Controls (gamepad 1):
 //   left stick / right stick  drive
 //   left trigger              intake
-//   right trigger (hold)      shoot (same spin-up and feed sequence as TeleOp)
+//   right trigger (hold)      shoot (same reverse, spin-up and feed sequence as robot.shoot())
 //   dpad up / down            target RPM +/- rpmStep
 //   dpad right / left         hood position +/- hoodStep
 //   cross                     record last shot as MADE
 //   circle                    record last shot as MISSED
 //   square                    delete the last recorded shot
 //   triangle                  switch alliance goal (red <-> blue)
-//   left bumper               switch distance source (odometry <-> manualDistance)
+//
+// Distance is from odometry to the closest goal of the selected alliance.
 @Configurable
 @NextTeleop(name = "Shooter Data Collection")
 public class ShooterDataCollection extends NextOpMode {
     public static double targetRpm = 2700;
-    public static double rpmStep = 50;
+    public static double rpmStep = 10;
     public static double hoodStep = 0.02;
-    // tape-measured distance (inches), used instead of odometry when the source is MANUAL
-    public static double manualDistance = 30;
 
     private static final File DATA_FILE = new File(AppUtil.ROOT_FOLDER, "shooter_data.csv");
     private static final File ARRAYS_FILE = new File(AppUtil.ROOT_FOLDER, "shooter_arrays.txt");
@@ -71,7 +70,6 @@ public class ShooterDataCollection extends NextOpMode {
     private boolean initialized;
 
     private Alliance alliance = Alliance.RED;
-    private boolean useManualDistance = false;
 
     // the shot in progress (right trigger held)
     private boolean shooting;
@@ -148,7 +146,7 @@ public class ShooterDataCollection extends NextOpMode {
 
         // Shoot at the chosen RPM, holding the hood at the chosen position
         gp1.rightTrigger().isOver(0.2).onTrue(parallel(
-                robot.setRPM(() -> targetRpm),
+                robot.shootAtRPM(() -> targetRpm),
                 loop(lazy(() -> robot.getHood().setPosition(robot.getHood().getServoAngle())))
         ));
         gp1.rightTrigger().isOver(0.2).onFalse(robot.stop());
@@ -165,15 +163,19 @@ public class ShooterDataCollection extends NextOpMode {
         gp1.square().onTrue(instant(this::deleteLastRecord));
         gp1.triangle().onTrue(instant(() ->
                 alliance = alliance == Alliance.RED ? Alliance.BLUE : Alliance.RED));
-        gp1.leftBumper().onTrue(instant(() -> useManualDistance = !useManualDistance));
     }
 
     private double distance() {
-        return useManualDistance ? manualDistance : poseTracker.distanceToGoal(alliance);
+        return poseTracker.distanceToGoal(alliance);
     }
 
     private double measuredRpm(NextMotor motor) {
         return motor.getEncoderVelocity().into(RotationsPerMinute);
+    }
+
+    // in RPM mode the PID output can go past 1 (e.g. 0.1 * 300 RPM error = 30); the hub clips it to [-1, 1]
+    private double appliedPower(NextMotor motor) {
+        return Math.max(-1.0, Math.min(1.0, motor.getThrottle()));
     }
 
     private double batteryVoltage() {
@@ -197,7 +199,7 @@ public class ShooterDataCollection extends NextOpMode {
             shotStartMs = now;
             current = new Shot();
             current.distance = distance();
-            current.distanceSource = useManualDistance ? "MANUAL" : "ODOMETRY";
+            current.distanceSource = "ODOMETRY";   // kept so the CSV columns don't change
             current.hoodPosition = robot.getHood().getServoAngle();
             current.targetRpm = targetRpm;
             current.x = poseTracker.getX();
@@ -215,7 +217,7 @@ public class ShooterDataCollection extends NextOpMode {
             current.rpmSum += rpm;
             current.minRpm = Math.min(current.minRpm, rpm);
             current.rpm2Sum += measuredRpm(robot.getFlywheel().flywheel2);
-            current.powerSum += motor.getThrottle();
+            current.powerSum += appliedPower(motor);
             current.currentSum += motor.getCurrent().into(Amperes);
             current.batterySum += batteryVoltage();
         }
@@ -330,13 +332,13 @@ public class ShooterDataCollection extends NextOpMode {
 
         NextMotor motor = robot.getFlywheel().flywheel;
         telemetry.addData("Status", status);
-        telemetry.addData("Distance", "%.1f in (%s)", distance(), useManualDistance ? "MANUAL" : "ODOMETRY");
+        telemetry.addData("Distance to closest goal", "%.1f in", distance());
         telemetry.addData("Alliance", alliance);
         telemetry.addData("Hood position (angle)", "%.3f", robot.getHood().getServoAngle());
         telemetry.addData("Target RPM", "%.0f", targetRpm);
         telemetry.addData("Flywheel RPM", "%.0f  (motor 2: %.0f)",
                 measuredRpm(motor), measuredRpm(robot.getFlywheel().flywheel2));
-        telemetry.addData("Flywheel power", "%.2f", motor.getThrottle());
+        telemetry.addData("Flywheel power", "%.2f", appliedPower(motor));
         telemetry.addData("Flywheel current", "%.2f A", motor.getCurrent().into(Amperes));
         telemetry.addData("Battery", "%.2f V", batteryVoltage());
         if (lastShot != null) {
