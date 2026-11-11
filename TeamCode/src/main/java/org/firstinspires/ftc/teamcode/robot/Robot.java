@@ -36,7 +36,9 @@ public class Robot implements NextRobot {
     private final Flywheel flywheel = new Flywheel();
     private final Blocker blocker = new Blocker();
     private final Hood hood = new Hood();
-    public static int charge = 3000;
+    public static int charge = 2000;
+    public static double servoWait = 100;
+    public static double reverseTime = 300;
     public Robot() {}
 
     public void createFollower() {
@@ -70,9 +72,16 @@ public class Robot implements NextRobot {
         return parallel(
                 flywheel.rollout(),
                 sequential(
-                        parallel(intake.stop(), intermediate.stop()),
-                        waitMs(charge),
+                        parallel(
+                                waitMs(charge),
+                                sequential(
+                                        intermediate.reverse(),
+                                        waitMs(reverseTime),
+                                        intermediate.stop()
+                                )
+                        ),
                         blocker.move(),
+                        waitMs(servoWait),
                         parallel(intake.intake(), intermediate.forward())
                 )
         );
@@ -85,6 +94,7 @@ public class Robot implements NextRobot {
                         parallel(intake.stop(), intermediate.stop()),
                         waitMs(charge),
                         blocker.move(),
+                        waitMs(servoWait),
                         parallel(intake.intake(), intermediate.forward())
                 )
         );
