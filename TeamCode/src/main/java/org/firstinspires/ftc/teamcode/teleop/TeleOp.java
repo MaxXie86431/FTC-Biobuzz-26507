@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
 import static com.pedropathing.ivy.commands.Commands.instant;
-import static com.pedropathing.ivy.commands.Commands.lazy;
-import static com.pedropathing.ivy.groups.Groups.loop;
 import static com.pedropathing.ivy.groups.Groups.parallel;
 import static dev.nextftc.units.Units.RotationsPerMinute;
 
@@ -52,10 +50,6 @@ public abstract class TeleOp extends NextOpMode{
         }
     }
 
-    // ####### Triangle(Y) #######
-    // Square(X) ###### Circle(B)
-    // #######  Cross(A)  #######
-
     @Override
     public void start() {
         follower.setPose(PoseTracker.getLastPose());
@@ -70,54 +64,33 @@ public abstract class TeleOp extends NextOpMode{
         robot.getDrivetrain().backRight.setZeroPowerBehavior(NextMotor.ZeroPowerBehavior.BRAKE);
         robot.getDrivetrain().drive(gamepad1).schedule();
 
+        // ==================== Actual Control Inputs ====================
+
         // Intake
-        gp1.leftTrigger().isOver(0.2).onTrue(parallel(
-                robot.getIntake().intake(),
-                robot.getIntermediate().forward()
-        ));
-        gp1.leftTrigger().isOver(0.2).onFalse(parallel(
-                robot.getIntake().stop(),
-                robot.getIntermediate().stop()
-        ));
-        gp1.leftBumper().onTrue(parallel(
-                robot.getIntake().outtake(),
-                robot.getIntermediate().reverse()
-        ));
-        gp1.leftBumper().onFalse(parallel(
-                robot.getIntake().stop(),
-                robot.getIntermediate().stop()
-        ));
+        gp1.leftTrigger().isOver(0.2).whileTrue(robot.intake());
+        gp1.leftBumper().whileTrue(robot.outTake());
 
-        // Flywheel
-        // LUT shot: RPM and hood follow the distance to the closest goal every loop
-        gp1.rightTrigger().isOver(0.2).onTrue(parallel(
-                robot.shootAtRPM(() -> lutShot().rpm + padding),
-                loop(lazy(() -> robot.getHood().setPosition(lutShot().angle)))
+        // Regression
+        gp1.rightTrigger().isOver(0.2).whileTrue(robot.calculatedShot(
+                () -> robot.getFlywheel().calculateRPM(poseTracker.distanceToGoal(alliance))
         ));
-        gp1.rightTrigger().isOver(0.2).onFalse(robot.stop());
-        gp1.rightBumper().onTrue(parallel(
-                robot.getBlocker().move(),
-                robot.getFlywheel().rollIn(),
-                loop(robot.getIntermediate().reverse())
-        ));
-        gp1.rightBumper().onFalse(robot.stop());
-        gp1.cross().onTrue(robot.shoot());
-        gp1.cross().onFalse(robot.stop());
+        gp1.rightBumper().whileTrue(robot.eject());
 
-        gp1.circle().onTrue(robot.getBlocker().toggle());
+        // Manual Shooting
+        gp1.a().whileTrue(robot.manualShot());
 
-        // Hood
-        gp1.triangle().onTrue(robot.getHood().moveServoDown());
-        gp1.square().onTrue(robot.getHood().moveServoUp());
+        // Blocker
+        gp1.b().onTrue(robot.getBlocker().toggle());
 
+        // Hood Adjustment
+        gp1.y().onTrue(robot.getHood().moveServoDown());
+        gp1.x().onTrue(robot.getHood().moveServoUp());
+
+        // Padding Adjustments
         gp1.dpadUp().onTrue(instant(() -> padding += paddingStep));
         gp1.dpadDown().onTrue(instant(() -> padding -= paddingStep));
         gp1.dpadLeft().onTrue(robot.getFlywheel().decreasePower());
         gp1.dpadRight().onTrue(robot.getFlywheel().increasePower());
-    }
-
-    private ShooterLUT.ShotSettings lutShot() {
-        return ShooterLUT.calculate(poseTracker.distanceToGoal(alliance));
     }
 
     @Override
@@ -132,7 +105,7 @@ public abstract class TeleOp extends NextOpMode{
         ShooterLUT.ShotSettings shot = ShooterLUT.calculate(distance);
         telemetry.addData("Distance from Goal", "%.1f in", distance);
         telemetry.addData("RPM Padding", padding);
-        telemetry.addData("LUT Target", "hood %.2f, %.0f RPM", shot.angle, shot.rpm + padding);
+        telemetry.addData("Target RPM", "%.1f", robot.getFlywheel().calculateRPM(distance));
         telemetry.addData("Servo Position", robot.getHood().getServoAngle());
         telemetry.update();
     }

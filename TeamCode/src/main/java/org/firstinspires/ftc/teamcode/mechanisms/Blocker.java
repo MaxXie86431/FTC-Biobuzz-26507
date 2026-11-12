@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.mechanisms;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.ivy.Command;
+import com.pedropathing.ivy.commands.Commands;
 
 import dev.nextftc.hardware.RobotController;
 import dev.nextftc.hardware.actuators.NextMotor;
@@ -10,26 +11,36 @@ import dev.nextftc.robot.Mechanism;
 
 @Configurable
 public class Blocker implements Mechanism {
-    public static double servoPosition = 0.8;
-    public static double servoReset = 0.55;
+    public static double upPos = 0.8;
+    public static double downPos = 0.55;
     NextServo servo = new NextServo(RobotController.expansionHub(), 1, 0.01, NextMotor.Direction.REVERSE);
-    private boolean open;
+    private boolean opened = false;
 
-    public Command move() {
-        return instant(() -> setOpen(true));
+    public Command open() {
+        return instant(() -> {
+            servo.setPosition(upPos);
+            opened = true;
+        });
     }
 
     public Command close() {
-        return instant(() -> setOpen(false));
+        return instant(() -> {
+            servo.setPosition(downPos);
+            opened = false;
+        });
     }
 
     public Command toggle() {
-        return instant(() -> setOpen(!open));
+        return instant(() -> {
+            opened = !opened;
+            servo.setPosition(opened ? upPos : downPos);
+        });
     }
 
-    private void setOpen(boolean open) {
-        servo.setPosition(open ? servoPosition : servoReset);
-        servo.enable();
-        this.open = open;
+    public Command closeOnEnd() {
+        return Commands.onInterrupt(() -> {
+            servo.setPosition(downPos);
+            opened = false;
+        }).requiring(this);
     }
 }

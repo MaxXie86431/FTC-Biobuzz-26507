@@ -8,9 +8,7 @@ import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Command;
 
-import static com.pedropathing.ivy.commands.Commands.lazy;
 import static com.pedropathing.ivy.commands.Commands.waitMs;
-import static com.pedropathing.ivy.groups.Groups.loop;
 import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 
@@ -39,15 +37,18 @@ public class Robot implements NextRobot {
     public static int charge = 2000;
     public static double servoWait = 100;
     public static double reverseTime = 200;
-    public Robot() {}
 
+    public Robot() {}
+    // ==================== Follower ====================
     public void createFollower() {
         follower = Constants.create(RobotController.hardwareMap());
     }
+
     public Follower getFollower() {
         return follower;
     }
 
+    // ==================== Getters ====================
     public Drivetrain getDrivetrain() {
         return drivetrain;
     }
@@ -68,52 +69,76 @@ public class Robot implements NextRobot {
 
     public Hood getHood(){ return hood; }
 
-    // spin-up wait while the intermediate backs the balls away, then open the blocker and feed
-    private Command feed() {
-        return sequential(
-                parallel(
-                        waitMs(charge),
-                        sequential(
-                                intermediate.reverse(),
-                                waitMs(reverseTime),
-                                intermediate.stop()
-                        )
-                ),
-                blocker.move(),
-                waitMs(servoWait),
-                parallel(intake.intake(), intermediate.forward())
-        );
-    }
-
-    public Command shoot() {
-        return parallel(flywheel.rollout(), feed());
-    }
-
-    // same feed sequence as shoot(), but holds the flywheel at an RPM instead of a fixed power
-    public Command shootAtRPM(DoubleSupplier rpm) {
+    // ==================== Multi-Mechanism Actions ====================
+    public Command intake() {
         return parallel(
-                loop(lazy(() -> flywheel.setVelocity(rpm.getAsDouble())).requiring(flywheel)),
-                feed()
+                intake.inward(),
+                intermediate.inward()
         );
     }
 
-    public Command stop() {
+    public Command outTake() {
         return parallel(
-                flywheel.stop(),
-                intake.stop(),
-                intermediate.stop(),
-                blocker.close()
+                intake.outward(),
+                intermediate.outward()
         );
     }
 
+    public Command manualShot() {
+        return parallel(
+                blocker.closeOnEnd(),
+                flywheel.rollOut(),
+                sequential(
+                        parallel(
+                                waitMs(charge),
+                                intermediate.outward().raceWith(waitMs(reverseTime))
+                        ),
+                        blocker.open(),
+                        waitMs(servoWait),
+                        parallel(intake.inward(), intermediate.inward())
+                )
+        );
+    }
+
+    public Command calculatedShot(DoubleSupplier rpm) {
+        return parallel(
+                blocker.closeOnEnd(),
+                flywheel.setRPM(rpm),
+                sequential(
+                        parallel(
+                                waitMs(charge),
+                                intermediate.outward().raceWith(waitMs(reverseTime))
+                        ),
+                        blocker.open(),
+                        waitMs(servoWait),
+                        parallel(intake.inward(), intermediate.inward())
+                )
+        );
+    }
+
+    public Command eject() {
+        return parallel(
+                blocker.closeOnEnd(),
+                sequential(
+                        blocker.open(),
+                        waitMs(servoWait),
+                        parallel(flywheel.rollIn(), intermediate.outward())
+                )
+        );
+    }
+
+    // ==================== Initialization ====================
     public Command init() {
-        return blocker.close();
+        return parallel(
+               hood.setPosition(Hood.servoLaunchPosition),
+               blocker.close()
+        );
     }
 
-
+    // ==================== Returning Mechanisms ====================
     @NonNull
     @Override
     public Set<Mechanism> getMechanisms() {
-        return Set.of(drivetrain, intermediate, intake, flywheel, blocker);
+        return Set.of(drivetrain, intermediate, intake, flywheel, blocker, hood);
     }
 }

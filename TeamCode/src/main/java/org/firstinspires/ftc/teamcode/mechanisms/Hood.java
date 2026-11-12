@@ -16,37 +16,32 @@ import static dev.nextftc.units.Units.RotationsPerMinute;
 @Configurable
 public class Hood implements Mechanism {
 
-    public static double servoLaunchPosition = 0.5;
-    NextServo launcherServo = new NextServo(RobotController.controlHub(), 4, 0.01);
-    private double power = 0.7;
-
+    public static double servoLaunchPosition = 0.48;
+    NextServo launcherServo = new NextServo(RobotController.controlHub(), 4);
 
     public double getServoAngle() {
         return servoLaunchPosition;
     }
 
 
-    public Command moveServoUp() {
+    public Command moveServoDown() {
         return instant(() -> {
-            servoLaunchPosition = Math.min(1.0, servoLaunchPosition + 0.05);
+            servoLaunchPosition = Math.min(1.0, servoLaunchPosition + 0.01);
             launcherServo.setPosition(servoLaunchPosition);
         });
     }
 
-    // jump straight to a servo position (clamped to 0-1), e.g. from a shooter model
+    public Command moveServoUp() {
+        return instant(() -> {
+            servoLaunchPosition = Math.max(0.0, servoLaunchPosition - 0.01);
+            launcherServo.setPosition(servoLaunchPosition);
+        });
+    }
+
     public Command setPosition(double position) {
         return instant(() -> {
             servoLaunchPosition = Math.max(0.0, Math.min(1.0, position));
             launcherServo.setPosition(servoLaunchPosition);
         });
     }
-
-    public Command moveServoDown() {
-        return instant(() -> {
-            servoLaunchPosition = Math.max(0.0, servoLaunchPosition - 0.05);
-            launcherServo.setPosition(servoLaunchPosition);
-        });
-    }
-
-
 }
