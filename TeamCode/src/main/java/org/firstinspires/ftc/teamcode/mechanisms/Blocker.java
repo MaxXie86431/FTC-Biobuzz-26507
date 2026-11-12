@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.mechanisms;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.ivy.Command;
-import com.pedropathing.ivy.commands.Commands;
 
 import dev.nextftc.hardware.RobotController;
 import dev.nextftc.hardware.actuators.NextMotor;
@@ -37,10 +36,4 @@ public class Blocker implements Mechanism {
         });
     }
 
-    public Command closeOnEnd() {
-        return Commands.onInterrupt(() -> {
-            servo.setPosition(downPos);
-            opened = false;
-        }).requiring(this);
-    }
 }

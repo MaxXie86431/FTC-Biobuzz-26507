@@ -17,10 +17,10 @@ import static dev.nextftc.units.Units.Volts;
 public class Flywheel implements Mechanism {
     private static final double VOLTAGE = 12.0;
 
-    public static double kS = 0;
-    public static double kV = 0; // ~0.000167 for NextFTC's built-in velocity control.
+    public static double kS = 0.1;
+    public static double kV = 0.0002;
     public static double kA = 0;
-    public static double kP = 0.1;
+    public static double kP = 0.001;
     public static double kI = 0.0;
     public static double kD = 0.0;
 
@@ -62,6 +62,10 @@ public class Flywheel implements Mechanism {
 
     public double getPower() {
         return power;
+    }
+
+    public double getVoltage() {
+        return power*VOLTAGE;
     }
 
     public Command rollOut() {
@@ -118,11 +122,6 @@ public class Flywheel implements Mechanism {
             flywheel.setVoltage(Volts.of(0.0));
             flywheel2.setVoltage(Volts.of(0.0));
         });
-    }
-
-    public double calculateRPM(double distance) {
-        // scale up to correct rpm
-        return 20 * (-47.02952 + 53.45873 * Math.log(distance));
     }
 }
 

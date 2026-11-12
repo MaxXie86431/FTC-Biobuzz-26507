@@ -15,12 +15,16 @@ public class Intake implements Mechanism {
     public static double outtakeValue = -0.3;
 
     public Command inward() {
-        return infinite(() -> intakeMotor.setThrottle(intakeValue))
+        return Command.build()
+                .requiring(this)
+                .setStart(() -> intakeMotor.setThrottle(intakeValue))
                 .setEnd(condition -> intakeMotor.setThrottle(0.0));
     }
 
     public Command outward() {
-        return infinite(() -> intakeMotor.setThrottle(outtakeValue))
+        return Command.build()
+                .requiring(this)
+                .setStart(() -> intakeMotor.setThrottle(outtakeValue))
                 .setEnd(condition -> intakeMotor.setThrottle(0.0));
     }
 

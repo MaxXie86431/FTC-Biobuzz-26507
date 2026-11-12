@@ -15,12 +15,16 @@ public class Intermediate implements Mechanism {
     public static double intermediateValue = 1.0;
 
     public Command inward() {
-        return infinite(() -> intermediateMotor.setThrottle(intermediateValue))
+        return Command.build()
+                .requiring(this)
+                .setStart(() -> intermediateMotor.setThrottle(intermediateValue))
                 .setEnd(condition -> intermediateMotor.setThrottle(0.0));
     }
 
     public Command outward() {
-        return infinite(() -> intermediateMotor.setThrottle(-intermediateValue))
+        return Command.build()
+                .requiring(this)
+                .setStart(() -> intermediateMotor.setThrottle(-intermediateValue))
                 .setEnd(condition -> intermediateMotor.setThrottle(0.0));
     }
 

@@ -11,6 +11,8 @@ import com.pedropathing.ivy.Command;
 import static com.pedropathing.ivy.commands.Commands.waitMs;
 import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.groups.Groups.sequential;
+import static com.pedropathing.ivy.groups.Groups.loop;
+import static com.pedropathing.ivy.commands.Commands.lazy;
 
 import dev.nextftc.hardware.RobotController;
 import dev.nextftc.robot.Mechanism;
@@ -85,8 +87,7 @@ public class Robot implements NextRobot {
     }
 
     public Command manualShot() {
-        return parallel(
-                blocker.closeOnEnd(),
+        Command action = parallel(
                 flywheel.rollOut(),
                 sequential(
                         parallel(
@@ -98,11 +99,22 @@ public class Robot implements NextRobot {
                         parallel(intake.inward(), intermediate.inward())
                 )
         );
+        return Command.build()
+                .requiring(action.requirements())
+                .setStart(action::start)
+                .setExecute(action::execute)
+                .setDone(action::done)
+                .setEnd(reason -> {
+                    action.end(reason);
+                    blocker.close().start();
+                });
     }
 
-    public Command calculatedShot(DoubleSupplier rpm) {
-        return parallel(
-                blocker.closeOnEnd(),
+    public Command calculatedShot(DoubleSupplier rpm, DoubleSupplier servolaunchPos) {
+        Command action = parallel(
+                loop(
+                        lazy(() -> hood.setPosition(servolaunchPos.getAsDouble())).requiring(hood)
+                ),
                 flywheel.setRPM(rpm),
                 sequential(
                         parallel(
@@ -114,17 +126,40 @@ public class Robot implements NextRobot {
                         parallel(intake.inward(), intermediate.inward())
                 )
         );
+        return Command.build()
+                .requiring(action.requirements())
+                .setStart(action::start)
+                .setExecute(action::execute)
+                .setDone(action::done)
+                .setEnd(reason -> {
+                    action.end(reason);
+                    blocker.close().start();
+                });
     }
 
     public Command eject() {
-        return parallel(
-                blocker.closeOnEnd(),
-                sequential(
-                        blocker.open(),
-                        waitMs(servoWait),
-                        parallel(flywheel.rollIn(), intermediate.outward())
-                )
+        Command action = sequential(
+                blocker.open(),
+                waitMs(servoWait),
+                parallel(flywheel.rollIn(), intermediate.outward())
         );
+        return Command.build()
+                .requiring(action.requirements())
+                .setStart(action::start)
+                .setExecute(action::execute)
+                .setDone(action::done)
+                .setEnd(reason -> {
+                    action.end(reason);
+                    blocker.close().start();
+                });
+    }
+
+    // ==================== Calculations ====================
+    public double[] calculateLaunch(double distance) {
+        // scaled up to correct rpm
+        double servoLaunchPos = 0.48;
+        // 20 * (-47.02952 + 53.45873 * Math.log(distance))
+        return new double[] {3000, servoLaunchPos};
     }
 
     // ==================== Initialization ====================

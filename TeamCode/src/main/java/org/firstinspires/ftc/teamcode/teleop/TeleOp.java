@@ -13,7 +13,6 @@ import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Scheduler;
 
-import org.firstinspires.ftc.teamcode.lut_interpolation.ShooterLUT;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.utils.Alliance;
 import org.firstinspires.ftc.teamcode.utils.PoseTracker;
@@ -72,7 +71,8 @@ public abstract class TeleOp extends NextOpMode{
 
         // Regression
         gp1.rightTrigger().isOver(0.2).whileTrue(robot.calculatedShot(
-                () -> robot.getFlywheel().calculateRPM(poseTracker.distanceToGoal(alliance))
+                () -> robot.calculateLaunch(poseTracker.distanceToGoal(alliance))[0],
+                () -> robot.calculateLaunch(poseTracker.distanceToGoal(alliance))[1]
         ));
         gp1.rightBumper().whileTrue(robot.eject());
 
@@ -98,14 +98,15 @@ public abstract class TeleOp extends NextOpMode{
         poseTracker.update();
         PoseTracker.saveLastPose(poseTracker.getPosition());
         telemetry.addData("Launcher Motor Power", robot.getFlywheel().getPower());
+        telemetry.addData("Launcher Voltage", robot.getFlywheel().getVoltage());
         //telemetry.addData("Servo Launcher Angle", robot.getFlywheel().getServoAngle());
         telemetry.addData("Flywheel RPM", robot.getFlywheel().flywheel.getEncoderVelocity().into(RotationsPerMinute));
         telemetry.addData("Pose", "x: %.1f, y: %.1f, h: %.1f°", poseTracker.getX(), poseTracker.getY(), Math.toDegrees(poseTracker.getHeading()));
         double distance = poseTracker.distanceToGoal(alliance);
-        ShooterLUT.ShotSettings shot = ShooterLUT.calculate(distance);
         telemetry.addData("Distance from Goal", "%.1f in", distance);
         telemetry.addData("RPM Padding", padding);
-        telemetry.addData("Target RPM", "%.1f", robot.getFlywheel().calculateRPM(distance));
+        telemetry.addData("Target RPM", "%.1f", robot.calculateLaunch(distance)[0]);
+        telemetry.addData("Calculated Angle", "%.1f", robot.calculateLaunch(distance)[1]);
         telemetry.addData("Servo Position", robot.getHood().getServoAngle());
         telemetry.update();
     }
