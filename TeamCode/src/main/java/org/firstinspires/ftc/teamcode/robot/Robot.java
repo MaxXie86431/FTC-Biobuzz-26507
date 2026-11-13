@@ -9,6 +9,7 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Command;
 
 import static com.pedropathing.ivy.commands.Commands.waitMs;
+import static com.pedropathing.ivy.commands.Commands.onInterrupt;
 import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.groups.Groups.loop;
@@ -38,7 +39,8 @@ public class Robot implements NextRobot {
     private final Hood hood = new Hood();
     public static int charge = 2000;
     public static double servoWait = 100;
-    public static double reverseTime = 200;
+    public static double reverseTime = 300;
+    public static int manualRPM = 2700;
 
     public Robot() {}
     // ==================== Follower ====================
@@ -86,8 +88,8 @@ public class Robot implements NextRobot {
         );
     }
 
-    public Command manualShot() {
-        Command action = parallel(
+    public Command legacyManualShot() {
+        return parallel(
                 flywheel.rollOut(),
                 sequential(
                         parallel(
@@ -98,20 +100,29 @@ public class Robot implements NextRobot {
                         waitMs(servoWait),
                         parallel(intake.inward(), intermediate.inward())
                 )
-        );
-        return Command.build()
-                .requiring(action.requirements())
-                .setStart(action::start)
-                .setExecute(action::execute)
-                .setDone(action::done)
-                .setEnd(reason -> {
-                    action.end(reason);
-                    blocker.close().start();
-                });
+        ).with(onInterrupt(() -> blocker.close().start()));
+    }
+
+    public Command manualShot() {
+        return parallel(
+                loop(
+                        lazy(() -> hood.setPosition(Hood.servoLaunchPosition)).requiring(hood)
+                ),
+                flywheel.setRPM(() -> manualRPM),
+                sequential(
+                        parallel(
+                                waitMs(charge),
+                                intermediate.outward().raceWith(waitMs(reverseTime))
+                        ),
+                        blocker.open(),
+                        waitMs(servoWait),
+                        parallel(intake.inward(), intermediate.inward())
+                )
+        ).with(onInterrupt(() -> blocker.close().start()));
     }
 
     public Command calculatedShot(DoubleSupplier rpm, DoubleSupplier servolaunchPos) {
-        Command action = parallel(
+        return parallel(
                 loop(
                         lazy(() -> hood.setPosition(servolaunchPos.getAsDouble())).requiring(hood)
                 ),
@@ -125,33 +136,15 @@ public class Robot implements NextRobot {
                         waitMs(servoWait),
                         parallel(intake.inward(), intermediate.inward())
                 )
-        );
-        return Command.build()
-                .requiring(action.requirements())
-                .setStart(action::start)
-                .setExecute(action::execute)
-                .setDone(action::done)
-                .setEnd(reason -> {
-                    action.end(reason);
-                    blocker.close().start();
-                });
+        ).with(onInterrupt(() -> blocker.close().start()));
     }
 
     public Command eject() {
-        Command action = sequential(
+        return sequential(
                 blocker.open(),
                 waitMs(servoWait),
                 parallel(flywheel.rollIn(), intermediate.outward())
-        );
-        return Command.build()
-                .requiring(action.requirements())
-                .setStart(action::start)
-                .setExecute(action::execute)
-                .setDone(action::done)
-                .setEnd(reason -> {
-                    action.end(reason);
-                    blocker.close().start();
-                });
+        ).with(onInterrupt(() -> blocker.close().start()));
     }
 
     // ==================== Calculations ====================
@@ -159,7 +152,7 @@ public class Robot implements NextRobot {
         // scaled up to correct rpm
         double servoLaunchPos = 0.48;
         // 20 * (-47.02952 + 53.45873 * Math.log(distance))
-        return new double[] {3000, servoLaunchPos};
+        return new double[] {manualRPM, servoLaunchPos};
     }
 
     // ==================== Initialization ====================

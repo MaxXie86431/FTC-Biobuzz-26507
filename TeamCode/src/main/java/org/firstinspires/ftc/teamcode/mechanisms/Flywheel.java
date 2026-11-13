@@ -28,7 +28,7 @@ public class Flywheel implements Mechanism {
             new NextMotor(RobotController.expansionHub(), 1, Degrees.of(360.0 / 28.0));
     public final NextMotor flywheel2 =
             new NextMotor(RobotController.expansionHub(), 3, Degrees.of(360.0 / 28.0));
-    private double power = 0.65; //2700 rpm at 0.48 servo position
+    private double power = 0.7;
 
     public Flywheel() {
         flywheel.setDirection(NextMotor.Direction.REVERSE);
@@ -96,11 +96,6 @@ public class Flywheel implements Mechanism {
 
     public Command decreasePower() {
         return Commands.instant(() -> power = Math.max(0.0, power - 0.01));
-    }
-
-    // Compatibility with callers using a fraction of the nominal 12 V supply.
-    public Command setThrottle(double throttle) {
-        return setVoltage(throttle * VOLTAGE);
     }
 
     public Command setVoltage(double volts) {
