@@ -31,8 +31,8 @@ public class HiveDownRoutines {
     public Command autoPathSimplified() {
         return sequential(
             waitMs(15000),
-            commands.runPath(paths.startPath()),
             deadline(waitMs(10000), robot.manualShot()),
+            commands.runPath(paths.startPath()),
             commands.runPath(paths.endPath())
         );
     }

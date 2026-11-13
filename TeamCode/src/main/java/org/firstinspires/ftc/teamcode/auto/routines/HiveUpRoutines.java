@@ -30,8 +30,8 @@ public class HiveUpRoutines {
 
     public Command autoPathSimplified() {
         return sequential(
-            commands.runPath(paths.startPath()),
             deadline(waitMs(10000), robot.manualShot()),
+            commands.runPath(paths.startPath()),
             commands.runPath(paths.intermediatePath()),
             commands.runPath(paths.endPath())
         );

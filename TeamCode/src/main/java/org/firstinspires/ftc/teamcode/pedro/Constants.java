@@ -42,6 +42,8 @@ public class Constants {
         c.offsetUnits.set(DistanceUnit.INCH);
     });
 
+
+
     public static ForesightConfig foresightConfig = new ForesightConfig(
             c -> {
                 Controller primaryTranslationalForward = Controller.proportional(0.21789571611221675);
