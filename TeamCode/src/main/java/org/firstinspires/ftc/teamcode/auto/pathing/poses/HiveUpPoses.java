@@ -8,7 +8,6 @@ import com.pedropathing.math.Pose;
 public class HiveUpPoses {
     public static PoseFactory factory = PoseFactory.degrees();
     public static Pose startPose = factory.of(59.5, 8, 270);
-    public static Pose launchPose = factory.of(59.5, 23.58, 270);
-    public static Pose intermediatePose = factory.of(24, 30, 270);
+    public static Pose intermediatePose = factory.of(30, 30, 270);
     public static Pose endPose = factory.of(12, 90, 270);
 }

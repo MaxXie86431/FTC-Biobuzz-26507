@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
-import static com.pedropathing.ivy.commands.Commands.instant;
 import static dev.nextftc.units.Units.RotationsPerMinute;
 
 import dev.nextftc.hardware.actuators.NextMotor;
@@ -12,6 +11,7 @@ import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Scheduler;
 
+import org.firstinspires.ftc.teamcode.mechanisms.Flywheel;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.utils.Alliance;
 import org.firstinspires.ftc.teamcode.utils.PoseTracker;
@@ -23,9 +23,6 @@ public abstract class TeleOp extends NextOpMode{
     private final PoseTracker poseTracker;
     private Follower follower;
     private boolean initialized;
-    // driver trim added on top of the LUT RPM (dpad up/down)
-    public static int padding = 0;
-    public static int paddingStep = 5;
     protected TeleOp(Robot robot, Alliance alliance) {
         super(robot);
         this.robot = robot;
@@ -69,25 +66,22 @@ public abstract class TeleOp extends NextOpMode{
         gp1.leftBumper().whileTrue(robot.outTake());
 
         // Regression
-        gp1.rightTrigger().isOver(0.2).whileTrue(robot.calculatedShot(
-                () -> robot.calculateLaunch(poseTracker.distanceToGoal(alliance))[0],
-                () -> robot.calculateLaunch(poseTracker.distanceToGoal(alliance))[1]
-        ));
+        gp1.rightTrigger().isOver(0.2).whileTrue(robot.manualShot());
         gp1.rightBumper().whileTrue(robot.eject());
 
         // Manual Shooting
-        gp1.a().whileTrue(robot.manualShot());
+        gp1.a().whileTrue(robot.cornerShot());
 
         // Blocker
         gp1.b().onTrue(robot.getBlocker().toggle());
 
         // Hood Adjustment
-        gp1.y().onTrue(robot.getHood().moveServoDown());
-        gp1.x().onTrue(robot.getHood().moveServoUp());
+        gp1.y().onTrue(robot.getHood().moveServoUp());
+        gp1.x().onTrue(robot.getHood().moveServoDown());
 
         // Padding Adjustments
-        gp1.dpadUp().onTrue(instant(() -> padding += paddingStep));
-        gp1.dpadDown().onTrue(instant(() -> padding -= paddingStep));
+        gp1.dpadUp().onTrue(robot.getFlywheel().increasePadding());
+        gp1.dpadDown().onTrue(robot.getFlywheel().decreasePadding());
         gp1.dpadLeft().onTrue(robot.getFlywheel().decreasePower());
         gp1.dpadRight().onTrue(robot.getFlywheel().increasePower());
     }
@@ -103,7 +97,7 @@ public abstract class TeleOp extends NextOpMode{
         telemetry.addData("Pose", "x: %.1f, y: %.1f, h: %.1f°", poseTracker.getX(), poseTracker.getY(), Math.toDegrees(poseTracker.getHeading()));
         double distance = poseTracker.distanceToGoal(alliance);
         telemetry.addData("Distance from Goal", "%.1f in", distance);
-        telemetry.addData("RPM Padding", padding);
+        telemetry.addData("RPM Padding", Flywheel.padding);
         telemetry.addData("Target RPM", "%.1f", robot.calculateLaunch(distance)[0]);
         telemetry.addData("Calculated Angle", "%.1f", robot.calculateLaunch(distance)[1]);
         telemetry.addData("Servo Position", robot.getHood().getServoAngle());

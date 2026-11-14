@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.auto.routines;
 
 import static com.pedropathing.ivy.commands.Commands.waitMs;
-import static com.pedropathing.ivy.groups.Groups.deadline;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 
 import com.pedropathing.ivy.Command;
@@ -30,9 +29,9 @@ public class HiveUpRoutines {
 
     public Command autoPathSimplified() {
         return sequential(
-            deadline(waitMs(10000), robot.manualShot()),
+            commands.runPath(paths.launchPath()),
+            robot.manualShot().raceWith(waitMs(10000)),
             commands.runPath(paths.startPath()),
-            commands.runPath(paths.intermediatePath()),
             commands.runPath(paths.endPath())
         );
     }

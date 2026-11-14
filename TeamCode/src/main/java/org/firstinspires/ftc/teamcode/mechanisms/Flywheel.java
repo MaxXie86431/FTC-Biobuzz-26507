@@ -23,6 +23,10 @@ public class Flywheel implements Mechanism {
     public static double kP = 0.001;
     public static double kI = 0.0;
     public static double kD = 0.0;
+    public static int manualRPM = 2700;
+    public static int cornerRPM = 2800;
+    public static int padding = 0;
+    public static int paddingStep = 5;
 
     public final NextMotor flywheel =
             new NextMotor(RobotController.expansionHub(), 1, Degrees.of(360.0 / 28.0));
@@ -96,6 +100,14 @@ public class Flywheel implements Mechanism {
 
     public Command decreasePower() {
         return Commands.instant(() -> power = Math.max(0.0, power - 0.01));
+    }
+
+    public Command increasePadding() {
+        return Commands.instant(() -> padding += paddingStep);
+    }
+
+    public Command decreasePadding() {
+        return Commands.instant(() -> padding -= paddingStep);
     }
 
     public Command setVoltage(double volts) {

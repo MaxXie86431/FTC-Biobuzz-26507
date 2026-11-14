@@ -17,6 +17,7 @@ import static dev.nextftc.units.Units.RotationsPerMinute;
 public class Hood implements Mechanism {
 
     public static double servoLaunchPosition = 0.48;
+    public static double cornerLaunchPosition = 0.46;
     NextServo launcherServo = new NextServo(RobotController.controlHub(), 4);
 
     public double getServoAngle() {
@@ -26,14 +27,14 @@ public class Hood implements Mechanism {
 
     public Command moveServoDown() {
         return instant(() -> {
-            servoLaunchPosition = Math.min(1.0, servoLaunchPosition + 0.01);
+            servoLaunchPosition = Math.min(1.0, servoLaunchPosition + 0.02);
             launcherServo.setPosition(servoLaunchPosition);
         });
     }
 
     public Command moveServoUp() {
         return instant(() -> {
-            servoLaunchPosition = Math.max(0.0, servoLaunchPosition - 0.01);
+            servoLaunchPosition = Math.max(0.0, servoLaunchPosition - 0.02);
             launcherServo.setPosition(servoLaunchPosition);
         });
     }

@@ -38,9 +38,8 @@ public class Robot implements NextRobot {
     private final Blocker blocker = new Blocker();
     private final Hood hood = new Hood();
     public static int charge = 2000;
-    public static double servoWait = 100;
+    public static double servoWait = 500;
     public static double reverseTime = 300;
-    public static int manualRPM = 2700;
 
     public Robot() {}
     // ==================== Follower ====================
@@ -108,7 +107,25 @@ public class Robot implements NextRobot {
                 loop(
                         lazy(() -> hood.setPosition(Hood.servoLaunchPosition)).requiring(hood)
                 ),
-                flywheel.setRPM(() -> manualRPM),
+                flywheel.setRPM(() -> Flywheel.manualRPM + Flywheel.padding),
+                sequential(
+                        parallel(
+                                waitMs(charge),
+                                intermediate.outward().raceWith(waitMs(reverseTime))
+                        ),
+                        blocker.open(),
+                        waitMs(servoWait),
+                        parallel(intake.inward(), intermediate.inward())
+                )
+        ).with(onInterrupt(() -> blocker.close().start()));
+    }
+
+    public Command cornerShot() {
+        return parallel(
+                loop(
+                        lazy(() -> hood.setPosition(Hood.cornerLaunchPosition)).requiring(hood)
+                ),
+                flywheel.setRPM(() -> Flywheel.cornerRPM + Flywheel.padding),
                 sequential(
                         parallel(
                                 waitMs(charge),
@@ -152,7 +169,7 @@ public class Robot implements NextRobot {
         // scaled up to correct rpm
         double servoLaunchPos = 0.48;
         // 20 * (-47.02952 + 53.45873 * Math.log(distance))
-        return new double[] {manualRPM, servoLaunchPos};
+        return new double[] {Flywheel.manualRPM, servoLaunchPos};
     }
 
     // ==================== Initialization ====================

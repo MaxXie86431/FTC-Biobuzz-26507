@@ -8,6 +8,7 @@ import com.pedropathing.paths.Path;
 
 import org.firstinspires.ftc.teamcode.auto.pathing.poses.HiveUpPoses;
 import org.firstinspires.ftc.teamcode.utils.Alliance;
+import org.firstinspires.ftc.teamcode.utils.PoseTracker;
 
 public class HiveUpPaths {
     private PoseFactory allianceFactory;
@@ -23,26 +24,27 @@ public class HiveUpPaths {
         else {
             allianceFactory = HiveUpPoses.factory;
         }
-        initPoses();
+        initPoses(alliance);
     }
 
     private Pose assign(Pose pose) {
         return allianceFactory.of(pose.x(), pose.y(), Math.toDegrees(pose.heading()));
     }
-    private void initPoses() {
+    private void initPoses(Alliance alliance) {
         startPose = assign(HiveUpPoses.startPose);
-        launchPose = assign(HiveUpPoses.launchPose);
-        endPose = assign(HiveUpPoses.endPose);
+        launchPose = PoseTracker.closerToGoal(startPose, alliance, 2.0);
         intermediatePose = assign(HiveUpPoses.intermediatePose);
+        endPose = assign(HiveUpPoses.endPose);
     }
 
-    public Path startPath(){
+    public Path launchPath() {
         return line(startPose, launchPose).linear(startPose, launchPose);
     }
 
-    public Path intermediatePath() {
+    public Path startPath(){
         return line(launchPose, intermediatePose).linear(launchPose, intermediatePose);
     }
+
     public Path endPath(){
         return line(intermediatePose, endPose).linear(intermediatePose, endPose);
     }

@@ -8,11 +8,13 @@ import com.pedropathing.paths.Path;
 
 import org.firstinspires.ftc.teamcode.auto.pathing.poses.HiveDownPoses;
 import org.firstinspires.ftc.teamcode.utils.Alliance;
+import org.firstinspires.ftc.teamcode.utils.PoseTracker;
 
 public class HiveDownPaths {
     private PoseFactory allianceFactory;
     private Pose startPose;
     private Pose launchPose;
+    private Pose intermediatePose;
     private Pose endPose;
 
     public HiveDownPaths(Alliance alliance){
@@ -22,23 +24,29 @@ public class HiveDownPaths {
         else {
             allianceFactory = HiveDownPoses.factory;
         }
-        initPoses();
+        initPoses(alliance);
     }
 
     private Pose assign(Pose pose) {
         return allianceFactory.of(pose.x(), pose.y(), Math.toDegrees(pose.heading()));
     }
-    private void initPoses() {
+    private void initPoses(Alliance alliance) {
         startPose = assign(HiveDownPoses.startPose);
-        launchPose = assign(HiveDownPoses.launchPose);
+        launchPose = PoseTracker.closerToGoal(startPose, alliance, 2.0);
+        intermediatePose = assign(HiveDownPoses.intermediatePose);
         endPose = assign(HiveDownPoses.endPose);
     }
 
-    public Path startPath(){
+    public Path launchPath() {
         return line(startPose, launchPose).linear(startPose, launchPose);
     }
-    public Path endPath(){
-        return line(launchPose, endPose).linear(launchPose, endPose);
+
+    public Path startPath() {
+        return line(launchPose, intermediatePose).linear(launchPose, intermediatePose);
+    }
+
+    public Path endPath() {
+        return line(intermediatePose, endPose).linear(intermediatePose, endPose);
     }
 
     public Pose getStartPose() {
